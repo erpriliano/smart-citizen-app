@@ -1,0 +1,9 @@
+{
+  "name": "publication-contracts",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/publication/contracts/src",
+  "projectType": "library",
+  "tags": ["scope:publication", "scope:contracts", "type:contracts"],
+  "// targets": "to see all targets run: nx show project publication-contracts --web",
+  "targets": {}
+}

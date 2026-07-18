@@ -1,0 +1,9 @@
+{
+  "name": "residency-api",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/residency/api/src",
+  "projectType": "library",
+  "tags": ["scope:residency", "type:api"],
+  "// targets": "to see all targets run: nx show project residency-api --web",
+  "targets": {}
+}

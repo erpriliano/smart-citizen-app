@@ -1,0 +1,9 @@
+{
+  "name": "publication-api",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/publication/api/src",
+  "projectType": "library",
+  "tags": ["scope:publication", "type:api"],
+  "// targets": "to see all targets run: nx show project publication-api --web",
+  "targets": {}
+}

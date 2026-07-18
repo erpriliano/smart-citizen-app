@@ -1,0 +1,9 @@
+{
+  "name": "finance-contracts",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/finance/contracts/src",
+  "projectType": "library",
+  "tags": ["scope:finance", "scope:contracts", "type:contracts"],
+  "// targets": "to see all targets run: nx show project finance-contracts --web",
+  "targets": {}
+}

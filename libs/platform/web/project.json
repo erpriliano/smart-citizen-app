@@ -1,0 +1,9 @@
+{
+  "name": "platform-web",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/platform/web/src",
+  "projectType": "library",
+  "tags": ["scope:platform", "type:web"],
+  "// targets": "to see all targets run: nx show project platform-web --web",
+  "targets": {}
+}

@@ -1,0 +1,9 @@
+{
+  "name": "community-api",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/community/api/src",
+  "projectType": "library",
+  "tags": ["scope:community", "type:api"],
+  "// targets": "to see all targets run: nx show project community-api --web",
+  "targets": {}
+}

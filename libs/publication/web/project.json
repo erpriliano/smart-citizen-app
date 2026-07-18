@@ -1,0 +1,9 @@
+{
+  "name": "publication-web",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/publication/web/src",
+  "projectType": "library",
+  "tags": ["scope:publication", "type:web"],
+  "// targets": "to see all targets run: nx show project publication-web --web",
+  "targets": {}
+}

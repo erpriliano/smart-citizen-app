@@ -1,0 +1,9 @@
+{
+  "name": "identity-web",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/identity/web/src",
+  "projectType": "library",
+  "tags": ["scope:identity", "type:web"],
+  "// targets": "to see all targets run: nx show project identity-web --web",
+  "targets": {}
+}

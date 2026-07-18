@@ -1,0 +1,25 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "base-nova",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "apps/web/src/styles.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "iconLibrary": "lucide",
+  "rtl": false,
+  "aliases": {
+    "components": "@smart-citizen/shared-ui/components",
+    "utils": "@smart-citizen/shared-ui/lib/utils",
+    "ui": "@smart-citizen/shared-ui/components/ui",
+    "lib": "@smart-citizen/shared-ui/lib",
+    "hooks": "@smart-citizen/shared-ui/hooks"
+  },
+  "menuColor": "default",
+  "menuAccent": "subtle",
+  "registries": {}
+}

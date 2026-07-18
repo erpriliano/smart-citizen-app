@@ -1,0 +1,9 @@
+{
+  "name": "residency-web",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/residency/web/src",
+  "projectType": "library",
+  "tags": ["scope:residency", "type:web"],
+  "// targets": "to see all targets run: nx show project residency-web --web",
+  "targets": {}
+}
