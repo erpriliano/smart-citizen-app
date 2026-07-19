@@ -13,6 +13,8 @@
     "format:check": "nx format:check",
     "lint": "nx run-many -t lint",
     "typecheck": "nx run-many -t typecheck",
+    "start:web": "nx serve web",
+    "start:api": "nx serve api",
     "test": "nx run-many -t test",
     "build": "nx run-many -t build",
     "e2e": "nx run-many -t e2e",
