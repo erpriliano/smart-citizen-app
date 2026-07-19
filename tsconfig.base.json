@@ -43,7 +43,8 @@
       "@smart-citizen/shared-ui/*": ["./libs/shared/ui/src/*"],
       "@smart-citizen/shared-database": ["./libs/shared/database/src/index.ts"],
       "@smart-citizen/shared-testing": ["./libs/shared/testing/src/index.ts"],
-      "@smart-citizen/shared-configuration": ["./libs/shared/configuration/src/index.ts"]
+      "@smart-citizen/shared-configuration": ["./libs/shared/configuration/src/index.ts"],
+      "@smart-citizen/shared-http-client": ["./libs/shared/http-client/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

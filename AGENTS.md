@@ -38,7 +38,7 @@ Complaints, resident accounts, events, social profiles, emergency workflows, bil
 
 - Monorepo: Nx 23 with pnpm workspaces.
 - Runtime: Node.js 22, TypeScript, pnpm 8.15.9.
-- Web: React 19, Vite, React Router, TanStack Query, React Hook Form, Zod, Tailwind CSS 4, and shadcn/ui Base/Nova.
+- Web: React 19, Vite, React Router, Axios, TanStack Query, React Hook Form, Zod, Tailwind CSS 4, and shadcn/ui Base/Nova.
 - API: NestJS 11, REST, OpenAPI, class-validator, and class-transformer.
 - Data: PostgreSQL and Prisma 7.
 - Files: an S3-compatible adapter will be introduced with the first file-backed feature.
@@ -57,6 +57,7 @@ libs/<domain>/contracts  Framework-neutral schemas and public types
 libs/<domain>/api        Domain/application services and NestJS adapters
 libs/<domain>/web        Domain UI, hooks, and client data access
 libs/shared/ui           shadcn components and tenant-aware design tokens
+libs/shared/http-client  Standard Axios transport and safe HTTP errors
 libs/shared/database     Prisma lifecycle and shared persistence infrastructure
 libs/shared/testing      Cross-project test utilities
 libs/shared/configuration Validated runtime configuration
@@ -116,6 +117,10 @@ Run `pnpm lint` after changing project tags, aliases, or cross-project imports.
 - Keep `apps/web` as a composition root. Domain screens, hooks, query definitions, and client services belong in `libs/<domain>/web`.
 - Use React Router for routes and protected route composition. Keep route modules focused and lazy-load substantial feature areas.
 - Use TanStack Query for remote server state. Do not fetch remote data in raw `useEffect` calls.
+- Use the standard Axios instance for HTTP transport. Components never call Axios directly; domain API functions in `libs/<domain>/web` own endpoints and response validation.
+- Pass TanStack Query's `signal` into domain API functions and then into Axios. TanStack Query owns retry policy; do not add Axios retries.
+- Keep `communityId` explicit in every tenant-owned domain request. Never derive tenant context from a global Axios interceptor.
+- Normalize shared transport failures as `HttpClientError`, then map them to domain-specific user messages at the domain UI boundary.
 - Define query keys next to the owning domain client. Invalidate the narrowest relevant key after a mutation.
 - Start independent requests together and avoid serial request waterfalls.
 - Use React Hook Form with Zod schemas for non-trivial forms. Reuse a framework-neutral contract schema only when the server and client truly share the same input contract.

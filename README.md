@@ -21,6 +21,12 @@ pnpm exec nx serve api
 
 The web application runs at `http://localhost:4200`. The API runs at `http://localhost:3000/api/v1`, with OpenAPI documentation at `http://localhost:3000/api/docs` outside production.
 
+## Frontend HTTP Client
+
+Axios is the standard frontend transport through `@smart-citizen/shared-http-client`. The web composition root exposes the application instance from `apps/web/src/app/http-client.ts` and reads its base URL from `VITE_API_URL`, with `/api/v1` as the same-origin fallback.
+
+Domain API functions belong in `libs/<domain>/web`. They use the shared client, validate response data at the domain boundary, and pass TanStack Query's `AbortSignal` to Axios. TanStack Query owns request retries, caching, and invalidation; Axios does not retry requests. Tenant-owned functions must receive `communityId` explicitly instead of relying on a global tenant interceptor.
+
 ## Verification
 
 ```bash
@@ -50,7 +56,7 @@ libs/
   finance/             Financial reports, transactions, and approvals
   publication/         Stable public snapshots
   audit/               Administrative audit events
-  shared/              UI, database, testing, and configuration infrastructure
+  shared/              UI, HTTP client, database, testing, and configuration infrastructure
 prisma/                 Prisma schema and future migrations
 docs/superpowers/       Approved designs and implementation plans
 ```
@@ -61,4 +67,5 @@ Domain libraries use `api`, `web`, and `contracts` layers only where meaningful.
 
 - [Bootstrap design](docs/superpowers/specs/2026-07-18-monorepo-bootstrap-design.md)
 - [Bootstrap implementation plan](docs/superpowers/plans/2026-07-18-monorepo-bootstrap.md)
+- [Axios HTTP client design](docs/superpowers/specs/2026-07-19-axios-http-client-design.md)
 - [Engineering rules](AGENTS.md)
