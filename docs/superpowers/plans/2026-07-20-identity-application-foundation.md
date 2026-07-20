@@ -280,7 +280,7 @@ git commit -m "feat(identity): add administrative session API"
 - Produces: semantic Tailwind tokens matching the approved design specification.
 - Produces: public `@smart-citizen/shared-ui` exports for the installed primitives.
 
-- [ ] **Step 1: Inspect the configured shadcn project and component documentation**
+- [x] **Step 1: Inspect the configured shadcn project and component documentation**
 
 Run:
 
@@ -289,7 +289,7 @@ pnpm dlx shadcn@latest info --json
 pnpm dlx shadcn@latest docs button input field alert skeleton separator dropdown-menu tooltip sheet
 ```
 
-- [ ] **Step 2: Add the required Base/Nova primitives through the CLI**
+- [x] **Step 2: Add the required Base/Nova primitives through the CLI**
 
 Run:
 
@@ -299,11 +299,11 @@ pnpm dlx shadcn@latest add button input field alert skeleton separator dropdown-
 
 Read every generated file, correct aliases if necessary, and expose components only from the shared UI public entry point.
 
-- [ ] **Step 3: Implement semantic tokens and stable control dimensions**
+- [x] **Step 3: Implement semantic tokens and stable control dimensions**
 
 Define light tokens from the approved design spec and compatible dark values under `.dark`. Set Geist, `min-width: 320px`, 40 px controls, visible focus rings, and reduced-motion behaviour. Do not create a theme toggle.
 
-- [ ] **Step 4: Run lint, typecheck, and commit**
+- [x] **Step 4: Run lint, typecheck, and commit**
 
 Run:
 
