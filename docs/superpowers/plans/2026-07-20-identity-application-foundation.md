@@ -124,11 +124,11 @@ git commit -m "feat(platform): add secure runtime database foundation"
 - Produces: `signInInputSchema`, `SignInInput`, `sessionContextSchema`, `SessionContext`, and `permissionCodeSchema`.
 - `SessionContext` contains safe user identity, one community, one membership identifier, position summaries, role summaries, and a de-duplicated permission-code array. It never includes a password hash or internal audit fields.
 
-- [ ] **Step 1: Write failing schema tests**
+- [x] **Step 1: Write failing schema tests**
 
 Cover normalised email input, minimum password length, complete session parsing, malformed community identifiers, and rejection of privileged unknown fields.
 
-- [ ] **Step 2: Run the focused test and confirm failure**
+- [x] **Step 2: Run the focused test and confirm failure**
 
 Run:
 
@@ -138,7 +138,7 @@ pnpm exec nx run identity-contracts:test
 
 Expected: fail because the session contract module does not exist.
 
-- [ ] **Step 3: Implement exact public contracts**
+- [x] **Step 3: Implement exact public contracts**
 
 Use strict Zod objects. The public session shape is:
 
@@ -159,7 +159,7 @@ type SessionContext = {
 };
 ```
 
-- [ ] **Step 4: Run the focused tests and commit**
+- [x] **Step 4: Run the focused tests and commit**
 
 Run:
 
