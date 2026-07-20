@@ -202,11 +202,11 @@ git commit -m "feat(identity): define administrative session contracts"
 - Produces: `POST /api/v1/identity/session`, `GET /api/v1/identity/session`, and `DELETE /api/v1/identity/session`.
 - Produces: `IdentityAccountRepository.findByNormalisedEmail(email)` and `findSessionContext({ userId, membershipId, communityId })`.
 
-- [ ] **Step 1: Write failing IdentitySessionService tests**
+- [x] **Step 1: Write failing IdentitySessionService tests**
 
 Use repository, password, and token boundary doubles. Cover successful sign-in, unknown email, missing password hash, incorrect password, inactive membership, invalid token, and tenant-mismatched token claims. Assert the same `InvalidCredentialsError` for all credential failures and `InvalidSessionError` for all session failures.
 
-- [ ] **Step 2: Run the service test and confirm failure**
+- [x] **Step 2: Run the service test and confirm failure**
 
 Run:
 
@@ -214,11 +214,11 @@ Run:
 pnpm exec nx run identity-api:test --testFile=identity-session.service.spec.ts
 ```
 
-- [ ] **Step 3: Implement application boundaries and service**
+- [x] **Step 3: Implement application boundaries and service**
 
 Normalise email with `trim().toLowerCase()`. Verify Argon2id hashes only through `PasswordHasher`. Sign only `{ sub, membershipId, communityId }`. Re-resolve active database context for every session read so role revocation, community deactivation, and officer handover take effect without waiting for token expiry.
 
-- [ ] **Step 4: Implement tenant-scoped Prisma queries**
+- [x] **Step 4: Implement tenant-scoped Prisma queries**
 
 The session-context query must include all three identifiers in its predicate:
 
@@ -235,15 +235,15 @@ where: {
 
 Select only fields needed to create the public contract. Filter active assignments with `revokedDateTime: null` and active roles, positions, and permissions with `status: 1`.
 
-- [ ] **Step 5: Write failing Supertest integration tests**
+- [x] **Step 5: Write failing Supertest integration tests**
 
 Override the repository, password hasher, and token service in a Nest test module. Cover valid sign-in cookie attributes, invalid credential response, current-session response, invalid-cookie response, sign-out cookie clearing, DTO whitelist rejection, and absence of password/token data in JSON.
 
-- [ ] **Step 6: Implement controller, DTO, cookie policy, and module wiring**
+- [x] **Step 6: Implement controller, DTO, cookie policy, and module wiring**
 
 Use `@ApiTags`, explicit response models, `@HttpCode`, and a single safe `UnauthorizedException('Email or password is incorrect.')` for credential failures. Session failures return `UnauthorizedException('Your session is no longer valid.')`. Enable `cookie-parser`, CORS credentials, whitelist validation, and `forbidNonWhitelisted: true` in the API bootstrap.
 
-- [ ] **Step 7: Run identity and API tests and commit**
+- [x] **Step 7: Run identity and API tests and commit**
 
 Run:
 

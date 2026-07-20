@@ -33,6 +33,9 @@
   "references": [
     {
       "path": "../../libs/shared/configuration/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/identity/api/tsconfig.lib.json"
     }
   ]
 }

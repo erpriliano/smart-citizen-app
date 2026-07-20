@@ -1,26 +1,31 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { parseEnvironment } from '@smart-citizen/shared-configuration';
+import type { Environment } from '@smart-citizen/shared-configuration';
+import cookieParser = require('cookie-parser');
 import { AppModule } from './app/app.module';
 
 async function bootstrap() {
-  const environment = parseEnvironment(process.env);
   const app = await NestFactory.create(AppModule);
+  const configuration = app.get(ConfigService<Environment, true>);
   const globalPrefix = 'api/v1';
 
   app.setGlobalPrefix(globalPrefix);
+  app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
       whitelist: true,
+      forbidNonWhitelisted: true,
     }),
   );
   app.enableCors({
-    origin: environment.WEB_ORIGIN,
+    origin: configuration.get('WEB_ORIGIN', { infer: true }),
+    credentials: true,
   });
 
-  if (environment.NODE_ENV !== 'production') {
+  if (configuration.get('NODE_ENV', { infer: true }) !== 'production') {
     const openApiConfig = new DocumentBuilder()
       .setTitle('Smart Citizen API')
       .setDescription('Administrative API for Smart Citizen communities.')
@@ -30,7 +35,7 @@ async function bootstrap() {
     SwaggerModule.setup('api/docs', app, document);
   }
 
-  const port = environment.PORT;
+  const port = configuration.get('PORT', { infer: true });
   await app.listen(port);
   Logger.log(`API available at http://localhost:${port}/${globalPrefix}`);
 }

@@ -68,6 +68,9 @@ importers:
       cookie-parser:
         specifier: ^1.4.7
         version: 1.4.7
+      express:
+        specifier: ^5.2.1
+        version: 5.2.1
       lucide-react:
         specifier: ^1.25.0
         version: 1.25.0(react@19.2.7)
@@ -128,10 +131,10 @@ importers:
         version: 23.0.1(@swc/cli@0.8.1)(@swc/core@1.15.43)(nx@23.0.1)
       '@nx/nest':
         specifier: 23.0.1
-        version: 23.0.1(@nestjs/common@11.1.28)(@nestjs/core@11.1.28)(@swc/cli@0.8.1)(@swc/core@1.15.43)(@types/node@22.20.1)(eslint@9.39.5)(nx@23.0.1)(prettier@3.6.2)(reflect-metadata@0.2.2)(rxjs@7.8.1)(typescript@5.9.3)
+        version: 23.0.1(@nestjs/common@11.1.28)(@nestjs/core@11.1.28)(@swc/cli@0.8.1)(@swc/core@1.15.43)(@types/node@22.20.1)(eslint@9.39.5)(express@5.2.1)(nx@23.0.1)(prettier@3.6.2)(reflect-metadata@0.2.2)(rxjs@7.8.1)(typescript@5.9.3)
       '@nx/node':
         specifier: 23.0.1
-        version: 23.0.1(@swc/cli@0.8.1)(@swc/core@1.15.43)(@types/node@22.20.1)(eslint@9.39.5)(nx@23.0.1)(typescript@5.9.3)
+        version: 23.0.1(@swc/cli@0.8.1)(@swc/core@1.15.43)(@types/node@22.20.1)(eslint@9.39.5)(express@5.2.1)(nx@23.0.1)(typescript@5.9.3)
       '@nx/playwright':
         specifier: 23.0.1
         version: 23.0.1(@playwright/test@1.61.1)(@swc/cli@0.8.1)(@swc/core@1.15.43)(eslint@9.39.5)(nx@23.0.1)
@@ -173,7 +176,10 @@ importers:
         version: 16.3.0(@testing-library/dom@10.4.0)(@types/react-dom@19.2.3)(@types/react@19.2.17)(react-dom@19.2.7)(react@19.2.7)
       '@types/cookie-parser':
         specifier: ^1.4.10
-        version: 1.4.10(@types/express@4.17.25)
+        version: 1.4.10(@types/express@5.0.6)
+      '@types/express':
+        specifier: ^5.0.6
+        version: 5.0.6
       '@types/node':
         specifier: ^22.0.0
         version: 22.20.1
@@ -3276,7 +3282,7 @@ packages:
       - webpack-cli
     dev: true
 
-  /@nx/nest@23.0.1(@nestjs/common@11.1.28)(@nestjs/core@11.1.28)(@swc/cli@0.8.1)(@swc/core@1.15.43)(@types/node@22.20.1)(eslint@9.39.5)(nx@23.0.1)(prettier@3.6.2)(reflect-metadata@0.2.2)(rxjs@7.8.1)(typescript@5.9.3):
+  /@nx/nest@23.0.1(@nestjs/common@11.1.28)(@nestjs/core@11.1.28)(@swc/cli@0.8.1)(@swc/core@1.15.43)(@types/node@22.20.1)(eslint@9.39.5)(express@5.2.1)(nx@23.0.1)(prettier@3.6.2)(reflect-metadata@0.2.2)(rxjs@7.8.1)(typescript@5.9.3):
     resolution: {integrity: sha512-/iSE/XzbOl1C1zDuQgeoKBmQAIJYwAj1PJNrnJKf2fS8Mf1s2wGdWnegNsp7iNmAWvZw3zXxhozFiNzJv/HUzA==}
     peerDependencies:
       '@nestjs/common': '>=10.0.0 <12.0.0'
@@ -3299,7 +3305,7 @@ packages:
       '@nx/devkit': 23.0.1(nx@23.0.1)
       '@nx/eslint': 23.0.1(@nx/jest@23.0.1)(@swc/cli@0.8.1)(@swc/core@1.15.43)(eslint@9.39.5)(nx@23.0.1)
       '@nx/js': 23.0.1(@swc/cli@0.8.1)(@swc/core@1.15.43)(nx@23.0.1)
-      '@nx/node': 23.0.1(@swc/cli@0.8.1)(@swc/core@1.15.43)(@types/node@22.20.1)(eslint@9.39.5)(nx@23.0.1)(typescript@5.9.3)
+      '@nx/node': 23.0.1(@swc/cli@0.8.1)(@swc/core@1.15.43)(@types/node@22.20.1)(eslint@9.39.5)(express@5.2.1)(nx@23.0.1)(typescript@5.9.3)
       reflect-metadata: 0.2.2
       rxjs: 7.8.1
       semver: 7.8.5
@@ -3331,7 +3337,7 @@ packages:
       - verdaccio
     dev: true
 
-  /@nx/node@23.0.1(@swc/cli@0.8.1)(@swc/core@1.15.43)(@types/node@22.20.1)(eslint@9.39.5)(nx@23.0.1)(typescript@5.9.3):
+  /@nx/node@23.0.1(@swc/cli@0.8.1)(@swc/core@1.15.43)(@types/node@22.20.1)(eslint@9.39.5)(express@5.2.1)(nx@23.0.1)(typescript@5.9.3):
     resolution: {integrity: sha512-s13ja7MITncR4M/uTGM786Jqco8lJs/9Kvo7jrKFg0Ct8d5XHbu+JFpulmCGPatsBhFA0E/JHSSfR+D9E7MWxA==}
     peerDependencies:
       express: '>=4.0.0 <6.0.0'
@@ -3350,6 +3356,7 @@ packages:
       '@nx/eslint': 23.0.1(@nx/jest@23.0.1)(@swc/cli@0.8.1)(@swc/core@1.15.43)(eslint@9.39.5)(nx@23.0.1)
       '@nx/jest': 23.0.1(@swc/cli@0.8.1)(@swc/core@1.15.43)(@types/node@22.20.1)(nx@23.0.1)(typescript@5.9.3)
       '@nx/js': 23.0.1(@swc/cli@0.8.1)(@swc/core@1.15.43)(nx@23.0.1)
+      express: 5.2.1
       kill-port: 1.6.1
       semver: 7.8.5
       tcp-port-used: 1.0.3
@@ -5388,12 +5395,12 @@ packages:
       '@types/node': 22.20.1
     dev: true
 
-  /@types/cookie-parser@1.4.10(@types/express@4.17.25):
+  /@types/cookie-parser@1.4.10(@types/express@5.0.6):
     resolution: {integrity: sha512-B4xqkqfZ8Wek+rCOeRxsjMS9OgvzebEzzLYw7NHYuvzb7IdxOkI0ZHGgeEBX4PUM7QGVvNSK60T3OvWj3YfBRg==}
     peerDependencies:
       '@types/express': '*'
     dependencies:
-      '@types/express': 4.17.25
+      '@types/express': 5.0.6
     dev: true
 
   /@types/cookiejar@2.1.5:
@@ -5437,6 +5444,15 @@ packages:
       '@types/send': 1.2.1
     dev: true
 
+  /@types/express-serve-static-core@5.1.2:
+    resolution: {integrity: sha512-d3KvEXBSo/lOAMc2u6fkyDHBvetBHeqD7wm/AcXfLpSOQwlmG9D/aQ0SFswVjv05p7ullQS7Mjohj6/VdbZuTg==}
+    dependencies:
+      '@types/node': 22.20.1
+      '@types/qs': 6.15.1
+      '@types/range-parser': 1.2.7
+      '@types/send': 1.2.1
+    dev: true
+
   /@types/express@4.17.25:
     resolution: {integrity: sha512-dVd04UKsfpINUnK0yBoYHDF3xu7xVH4BuDotC/xGuycx4CgbP48X/KF/586bcObxT0HENHXEU8Nqtu6NR+eKhw==}
     dependencies:
@@ -5444,6 +5460,14 @@ packages:
       '@types/express-serve-static-core': 4.19.9
       '@types/qs': 6.15.1
       '@types/serve-static': 1.15.10
+    dev: true
+
+  /@types/express@5.0.6:
+    resolution: {integrity: sha512-sKYVuV7Sv9fbPIt/442koC7+IIwK5olP1KWeD88e/idgoJqDm3JV/YUiPwkoKK92ylff2MGxSz1CSjsXelx0YA==}
+    dependencies:
+      '@types/body-parser': 1.19.6
+      '@types/express-serve-static-core': 5.1.2
+      '@types/serve-static': 2.2.0
     dev: true
 
   /@types/http-cache-semantics@4.2.0:
@@ -5563,7 +5587,7 @@ packages:
   /@types/serve-index@1.9.4:
     resolution: {integrity: sha512-qLpGZ/c2fhSs5gnYsQxtDEq3Oy8SXPClIXkW5ghvAvsNuVSA8k+gCONcUCS/UjLEYvYps+e8uBtfgXgvhwfNug==}
     dependencies:
-      '@types/express': 4.17.25
+      '@types/express': 5.0.6
     dev: true
 
   /@types/serve-static@1.15.10:
@@ -5572,6 +5596,13 @@ packages:
       '@types/http-errors': 2.0.5
       '@types/node': 22.20.1
       '@types/send': 0.17.6
+    dev: true
+
+  /@types/serve-static@2.2.0:
+    resolution: {integrity: sha512-8mam4H1NHLtu7nmtalF7eyBH14QyOASmcxHhSfEoRyr0nP/YdoesEtU+uSRvMe96TW/HPTtkoKqQLl53N7UXMQ==}
+    dependencies:
+      '@types/http-errors': 2.0.5
+      '@types/node': 22.20.1
     dev: true
 
   /@types/sockjs@0.3.36:
@@ -8882,7 +8913,7 @@ packages:
     resolution: {integrity: sha512-u+SQgsubraE6zItfVA0tBuCBhfU9ogSRnsvygI7wht9TS510oLkBRXBsqopeUG/GBOIQyKZO9wjTqIu/sf5zFA==}
     engines: {node: '>=0.10.0'}
     dependencies:
-      mime-db: 1.52.0
+      mime-db: 1.54.0
     dev: true
 
   /ext-name@5.0.0:

@@ -3,20 +3,20 @@ import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { defineConfig } from 'vitest/config';
 
-const environmentPath = resolve(__dirname, '../../.env');
+const environmentPath = resolve(__dirname, '../../../.env');
 if (existsSync(environmentPath)) process.loadEnvFile(environmentPath);
 
 const databaseUrl = process.env['TEST_DATABASE_URL'];
-if (!databaseUrl) throw new Error('TEST_DATABASE_URL is required for API tests.');
+if (!databaseUrl) throw new Error('TEST_DATABASE_URL is required for identity API tests.');
 
 export default defineConfig(() => ({
   root: __dirname,
-  cacheDir: '../../node_modules/.vite/apps/api',
+  cacheDir: '../../../node_modules/.vite/libs/identity/api',
   resolve: {
     tsconfigPaths: true,
   },
   test: {
-    name: 'api',
+    name: 'identity-api',
     watch: false,
     globals: true,
     environment: 'node',
@@ -31,7 +31,7 @@ export default defineConfig(() => ({
     include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     reporters: ['default'],
     coverage: {
-      reportsDirectory: '../../coverage/apps/api',
+      reportsDirectory: '../../../coverage/libs/identity/api',
       provider: 'v8' as const,
     },
   },
