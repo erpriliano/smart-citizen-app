@@ -534,6 +534,6 @@ Commit only if verification required source changes:
 git commit -m "fix(web): address pilot foundation verification"
 ```
 
-- [ ] **Step 5: Update delivery tracking**
+- [x] **Step 5: Update delivery tracking**
 
 Check `Page 01: Sign In` in Notion only if the complete page gate passes. Leave `Page 02: Weekly Overview` unchecked until finance and residency summaries are connected to their real domain APIs. Record the branch, verification commands, and remaining Slice 1 limitation in the final handoff.
