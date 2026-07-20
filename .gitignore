@@ -1,6 +1,7 @@
 # Dependencies and caches
 node_modules/
 .nx/
+.superpowers/
 
 # Build and test output
 dist/
