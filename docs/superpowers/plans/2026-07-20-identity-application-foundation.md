@@ -454,11 +454,11 @@ git commit -m "feat(platform): add role-adaptive pilot workspace"
 - Consumes: shared API client, `IdentityProvider`, identity routes, protected shell, and platform overview.
 - Produces: route composition with `/sign-in`, protected `/`, and a safe not-found state.
 
-- [ ] **Step 1: Write failing application composition tests**
+- [x] **Step 1: Write failing application composition tests**
 
 Cover unauthenticated redirect, Sign In rendering, authenticated overview rendering, preservation of the requested route, and no legacy placeholder copy.
 
-- [ ] **Step 2: Run the web test and confirm failure**
+- [x] **Step 2: Run the web test and confirm failure**
 
 Run:
 
@@ -466,15 +466,15 @@ Run:
 pnpm exec nx run web:test
 ```
 
-- [ ] **Step 3: Compose providers and lazy routes**
+- [x] **Step 3: Compose providers and lazy routes**
 
 Configure the shared Axios client with `withCredentials: true`. Keep `App` as route composition only. Lazy-load identity and platform route modules without importing API or database code.
 
-- [ ] **Step 4: Replace the placeholder Playwright workflow**
+- [x] **Step 4: Replace the placeholder Playwright workflow**
 
 Intercept only API boundaries in the browser test. Verify Sign In at 375 px, administrative privacy gate at 375 px, authenticated shell at 768 px and desktop, no horizontal overflow, keyboard navigation, sign-out, and zero console errors.
 
-- [ ] **Step 5: Run focused web and browser tests and commit**
+- [x] **Step 5: Run focused web and browser tests and commit**
 
 Run:
 
