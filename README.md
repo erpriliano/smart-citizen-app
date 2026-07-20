@@ -2,7 +2,7 @@
 
 Smart Citizen is a privacy-conscious community information system for Indonesian RT organizations. The pilot gives authorized RT officers a structured source of truth for resident records and monthly financial reporting while WhatsApp remains the familiar distribution channel.
 
-This repository currently contains the development foundation only. Pilot business workflows and data entities will be added in independently reviewed feature slices.
+This repository contains the development and database foundations. Pilot business workflows will be added in independently reviewed feature slices.
 
 ## Prerequisites
 
@@ -20,6 +20,40 @@ pnpm exec nx serve api
 ```
 
 The web application runs at `http://localhost:4200`. The API runs at `http://localhost:3000/api/v1`, with OpenAPI documentation at `http://localhost:3000/api/docs` outside production.
+
+## Local Database
+
+Local Prisma development uses three PostgreSQL databases owned by the `smart_citizen_app` role:
+
+- `smart_citizen_dev` for application development.
+- `smart_citizen_test` for rollback-safe database verification.
+- `smart_citizen_shadow` for Prisma migration validation.
+
+Set the three URLs in the ignored `.env` file. Replace `change-me` with the local role password and URL-encode special characters:
+
+```dotenv
+DATABASE_URL=postgresql://smart_citizen_app:change-me@127.0.0.1:5433/smart_citizen_dev?schema=public
+TEST_DATABASE_URL=postgresql://smart_citizen_app:change-me@127.0.0.1:5433/smart_citizen_test?schema=public
+SHADOW_DATABASE_URL=postgresql://smart_citizen_app:change-me@127.0.0.1:5433/smart_citizen_shadow?schema=public
+```
+
+Prisma owns application tables. Do not create or change them manually in pgAdmin. Create and review a migration with:
+
+```bash
+pnpm db:migrate:dev --name database_foundation
+```
+
+Validate the schema, migration history, and database constraints with:
+
+```bash
+pnpm db:validate
+pnpm db:generate
+pnpm db:migrate:check
+pnpm db:migrate:status
+pnpm db:test
+```
+
+`pnpm db:test` deploys the committed migrations to `smart_citizen_test`, inserts synthetic records inside a transaction, checks tenant and data-integrity constraints, and rolls the transaction back. It does not persist test data.
 
 ## Frontend HTTP Client
 
@@ -57,7 +91,7 @@ libs/
   publication/         Stable public snapshots
   audit/               Administrative audit events
   shared/              UI, HTTP client, database, testing, and configuration infrastructure
-prisma/                 Prisma schema and future migrations
+prisma/                 Prisma schema and migrations
 docs/superpowers/       Approved designs and implementation plans
 ```
 
@@ -68,4 +102,6 @@ Domain libraries use `api`, `web`, and `contracts` layers only where meaningful.
 - [Bootstrap design](docs/superpowers/specs/2026-07-18-monorepo-bootstrap-design.md)
 - [Bootstrap implementation plan](docs/superpowers/plans/2026-07-18-monorepo-bootstrap.md)
 - [Axios HTTP client design](docs/superpowers/specs/2026-07-19-axios-http-client-design.md)
+- [Database foundation design](docs/superpowers/specs/2026-07-19-database-foundation-design.md)
+- [Database foundation implementation plan](docs/superpowers/plans/2026-07-19-database-foundation.md)
 - [Engineering rules](AGENTS.md)

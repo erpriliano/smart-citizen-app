@@ -13,6 +13,24 @@ jobs:
     name: verify
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/smart_citizen_dev?schema=public
+      TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/smart_citizen_test?schema=public
+      SHADOW_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/smart_citizen_shadow?schema=public
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Check out repository
@@ -32,6 +50,21 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Create verification databases
+        env:
+          PGPASSWORD: postgres
+        run: |
+          createdb --host 127.0.0.1 --username postgres smart_citizen_dev
+          createdb --host 127.0.0.1 --username postgres smart_citizen_test
+          createdb --host 127.0.0.1 --username postgres smart_citizen_shadow
+
+      - name: Verify database schema
+        run: |
+          pnpm db:validate
+          pnpm db:generate
+          pnpm db:migrate:check
+          pnpm db:test
 
       - name: Verify workspace
         run: pnpm verify
