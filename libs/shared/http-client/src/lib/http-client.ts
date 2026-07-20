@@ -13,6 +13,7 @@ export type AccessTokenProvider = () =>
 export interface CreateHttpClientOptions {
   baseURL: string;
   timeoutMs?: number;
+  withCredentials?: boolean;
   getAccessToken?: AccessTokenProvider;
 }
 
@@ -26,6 +27,9 @@ export function createHttpClient(options: CreateHttpClientOptions): HttpClient {
   const client = axios.create({
     baseURL: options.baseURL,
     timeout: options.timeoutMs ?? DEFAULT_TIMEOUT_MS,
+    ...(options.withCredentials === undefined
+      ? {}
+      : { withCredentials: options.withCredentials }),
     headers: {
       Accept: 'application/json',
     },

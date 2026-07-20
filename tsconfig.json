@@ -10,6 +10,9 @@
     },
     {
       "path": "./libs/shared/http-client"
+    },
+    {
+      "path": "./libs/shared/database"
     }
   ]
 }
