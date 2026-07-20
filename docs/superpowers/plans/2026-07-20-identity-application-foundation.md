@@ -341,11 +341,11 @@ git commit -m "feat(ui): add quiet utility design foundations"
 - Consumes: injected `HttpClient`, identity contracts, React Router, TanStack Query, React Hook Form, Zod, and shared UI.
 - Produces: `createIdentityClient`, `IdentityProvider`, `useSessionQuery`, `useSignInMutation`, `useSignOutMutation`, `ProtectedRoute`, and `SignInPage`.
 
-- [ ] **Step 1: Write failing client and Sign In behaviour tests**
+- [x] **Step 1: Write failing client and Sign In behaviour tests**
 
 Cover request paths, AbortSignal forwarding, credential-cookie usage, labelled fields, client validation, disabled submission, generic server failure, successful cache population, and redirect to the originally requested route. Use synthetic `example.test` addresses and non-secret test passwords.
 
-- [ ] **Step 2: Run focused tests and confirm failure**
+- [x] **Step 2: Run focused tests and confirm failure**
 
 Run:
 
@@ -353,19 +353,19 @@ Run:
 pnpm exec nx run identity-web:test
 ```
 
-- [ ] **Step 3: Implement the injected identity client and query definitions**
+- [x] **Step 3: Implement the injected identity client and query definitions**
 
 Use query key `['identity', 'session']`, `retry: false` for unauthorised session reads, and the request signal passed by TanStack Query. Sign-out clears only the identity session cache.
 
-- [ ] **Step 4: Implement the accessible Sign In page**
+- [x] **Step 4: Implement the accessible Sign In page**
 
 Visible copy is limited to `Smart Citizen`, `Administrative workspace`, `Email address`, `Password`, `Sign in`, and necessary validation or error feedback. Use `FieldGroup` and `Field`, autofocus email, `autocomplete="username"` and `autocomplete="current-password"`, and preserve the requested route in navigation state.
 
-- [ ] **Step 5: Implement ProtectedRoute states**
+- [x] **Step 5: Implement ProtectedRoute states**
 
 Loading uses stable skeleton dimensions. A `401` redirects to `/sign-in` with the attempted location. Other failures render a retry action. Authenticated sessions render the outlet context without duplicating session state.
 
-- [ ] **Step 6: Run identity web tests and commit**
+- [x] **Step 6: Run identity web tests and commit**
 
 Run:
 

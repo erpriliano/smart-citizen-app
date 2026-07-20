@@ -19,6 +19,12 @@
     },
     {
       "path": "./libs/identity/api"
+    },
+    {
+      "path": "./libs/identity/web"
+    },
+    {
+      "path": "./libs/shared/ui"
     }
   ]
 }
