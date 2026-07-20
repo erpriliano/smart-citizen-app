@@ -7,3 +7,587 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum ResidencyType {
+  PERMANENT
+  TEMPORARY
+
+  @@map("residency_type")
+}
+
+enum FinancialEntryType {
+  INCOME
+  EXPENSE
+
+  @@map("financial_entry_type")
+}
+
+enum FinancialReportStage {
+  DRAFT
+  UNDER_REVIEW
+  APPROVED
+
+  @@map("financial_report_stage")
+}
+
+enum FinancialApprovalDecision {
+  APPROVED
+  REJECTED
+  CHANGES_REQUESTED
+
+  @@map("financial_approval_decision")
+}
+
+enum PublicationType {
+  FINANCIAL_REPORT
+
+  @@map("publication_type")
+}
+
+enum AuditActorType {
+  HUMAN
+  SYSTEM
+
+  @@map("audit_actor_type")
+}
+
+model Community {
+  id              String   @id @default(uuid()) @db.Uuid
+  name            String
+  slug            String   @unique
+  timezone        String   @default("Asia/Jakarta")
+  currency        String   @default("IDR")
+  status          Int      @default(1) @db.SmallInt
+  createdByUserId String?  @map("created_by_user_id") @db.Uuid
+  updatedByUserId String?  @map("updated_by_user_id") @db.Uuid
+  createdDateTime DateTime @default(now()) @map("created_date_time") @db.Timestamptz(3)
+  updatedDateTime DateTime @default(now()) @updatedAt @map("updated_date_time") @db.Timestamptz(3)
+
+  createdByUser User? @relation("CommunityCreatedBy", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  updatedByUser User? @relation("CommunityUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: Restrict)
+
+  memberships                   CommunityMembership[]
+  positions                     CommunityPosition[]
+  roles                         CommunityRole[]
+  positionAssignments           MembershipPositionAssignment[]
+  rolePermissions               RolePermission[]
+  membershipRoles               MembershipRole[]
+  houses                        House[]
+  residents                     Resident[]
+  residencies                   Residency[]
+  financialCategories           FinancialCategory[]
+  financialReports              FinancialReport[]
+  financialReportEntries        FinancialReportEntry[]
+  financialReportApprovals      FinancialReportApproval[]
+  publications                  Publication[]
+  financialPublicationSnapshots FinancialReportPublicationSnapshot[]
+  auditEvents                   AuditEvent[]
+
+  @@map("communities")
+}
+
+model User {
+  id              String   @id @default(uuid()) @db.Uuid
+  email           String
+  normalizedEmail String   @unique @map("normalized_email")
+  passwordHash    String?  @map("password_hash")
+  status          Int      @default(1) @db.SmallInt
+  createdByUserId String?  @map("created_by_user_id") @db.Uuid
+  updatedByUserId String?  @map("updated_by_user_id") @db.Uuid
+  createdDateTime DateTime @default(now()) @map("created_date_time") @db.Timestamptz(3)
+  updatedDateTime DateTime @default(now()) @updatedAt @map("updated_date_time") @db.Timestamptz(3)
+
+  createdByUser User?  @relation("UserCreatedBy", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  updatedByUser User?  @relation("UserUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: Restrict)
+  usersCreated  User[] @relation("UserCreatedBy")
+  usersUpdated  User[] @relation("UserUpdatedBy")
+
+  communitiesCreated Community[]          @relation("CommunityCreatedBy")
+  communitiesUpdated Community[]          @relation("CommunityUpdatedBy")
+  membership         CommunityMembership?
+
+  permissionsCreated   Permission[]   @relation("PermissionCreatedBy")
+  permissionsUpdated   Permission[]   @relation("PermissionUpdatedBy")
+  platformRolesCreated PlatformRole[] @relation("PlatformRoleCreatedBy")
+  platformRolesUpdated PlatformRole[] @relation("PlatformRoleUpdatedBy")
+
+  platformRoleAssignments        UserPlatformRole[] @relation("PlatformRoleAssignee")
+  platformRoleAssignmentsCreated UserPlatformRole[] @relation("UserPlatformRoleCreatedBy")
+  platformRoleAssignmentsRevoked UserPlatformRole[] @relation("UserPlatformRoleRevokedBy")
+
+  @@map("users")
+}
+
+model CommunityMembership {
+  id                    String   @id @default(uuid()) @db.Uuid
+  communityId           String   @map("community_id") @db.Uuid
+  userId                String   @unique @map("user_id") @db.Uuid
+  status                Int      @default(1) @db.SmallInt
+  createdByMembershipId String?  @map("created_by_membership_id") @db.Uuid
+  updatedByMembershipId String?  @map("updated_by_membership_id") @db.Uuid
+  createdDateTime       DateTime @default(now()) @map("created_date_time") @db.Timestamptz(3)
+  updatedDateTime       DateTime @default(now()) @updatedAt @map("updated_date_time") @db.Timestamptz(3)
+
+  community Community @relation(fields: [communityId], references: [id], onDelete: Restrict)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  createdByMembership CommunityMembership?  @relation("MembershipCreatedBy", fields: [communityId, createdByMembershipId], references: [communityId, id], onDelete: Restrict)
+  updatedByMembership CommunityMembership?  @relation("MembershipUpdatedBy", fields: [communityId, updatedByMembershipId], references: [communityId, id], onDelete: Restrict)
+  membershipsCreated  CommunityMembership[] @relation("MembershipCreatedBy")
+  membershipsUpdated  CommunityMembership[] @relation("MembershipUpdatedBy")
+
+  positionAssignments         MembershipPositionAssignment[]       @relation("PositionAssignee")
+  positionAssignmentsCreated  MembershipPositionAssignment[]       @relation("PositionAssignmentCreatedBy")
+  positionAssignmentsRevoked  MembershipPositionAssignment[]       @relation("PositionAssignmentRevokedBy")
+  rolePermissionsCreated      RolePermission[]                     @relation("RolePermissionCreatedBy")
+  rolePermissionsRevoked      RolePermission[]                     @relation("RolePermissionRevokedBy")
+  roleAssignments             MembershipRole[]                     @relation("RoleAssignee")
+  roleAssignmentsCreated      MembershipRole[]                     @relation("MembershipRoleCreatedBy")
+  roleAssignmentsRevoked      MembershipRole[]                     @relation("MembershipRoleRevokedBy")
+  positionsCreated            CommunityPosition[]                  @relation("PositionCreatedBy")
+  positionsUpdated            CommunityPosition[]                  @relation("PositionUpdatedBy")
+  rolesCreated                CommunityRole[]                      @relation("CommunityRoleCreatedBy")
+  rolesUpdated                CommunityRole[]                      @relation("CommunityRoleUpdatedBy")
+  housesCreated               House[]                              @relation("HouseCreatedBy")
+  housesUpdated               House[]                              @relation("HouseUpdatedBy")
+  residentsCreated            Resident[]                           @relation("ResidentCreatedBy")
+  residentsUpdated            Resident[]                           @relation("ResidentUpdatedBy")
+  residenciesCreated          Residency[]                          @relation("ResidencyCreatedBy")
+  residenciesUpdated          Residency[]                          @relation("ResidencyUpdatedBy")
+  financialCategoriesCreated  FinancialCategory[]                  @relation("FinancialCategoryCreatedBy")
+  financialCategoriesUpdated  FinancialCategory[]                  @relation("FinancialCategoryUpdatedBy")
+  financialReportsCreated     FinancialReport[]                    @relation("FinancialReportCreatedBy")
+  financialReportsUpdated     FinancialReport[]                    @relation("FinancialReportUpdatedBy")
+  financialEntriesCreated     FinancialReportEntry[]               @relation("FinancialEntryCreatedBy")
+  financialEntriesUpdated     FinancialReportEntry[]               @relation("FinancialEntryUpdatedBy")
+  financialApprovalsCreated   FinancialReportApproval[]            @relation("FinancialApprovalCreatedBy")
+  publicationsCreated         Publication[]                        @relation("PublicationCreatedBy")
+  publicationSnapshotsCreated FinancialReportPublicationSnapshot[] @relation("PublicationSnapshotCreatedBy")
+  auditEventsCreated          AuditEvent[]                         @relation("AuditEventCreatedBy")
+
+  @@unique([communityId, id])
+  @@index([communityId, status])
+  @@map("community_memberships")
+}
+
+model CommunityPosition {
+  id                    String   @id @default(uuid()) @db.Uuid
+  communityId           String   @map("community_id") @db.Uuid
+  code                  String
+  name                  String
+  description           String?
+  status                Int      @default(1) @db.SmallInt
+  createdByMembershipId String?  @map("created_by_membership_id") @db.Uuid
+  updatedByMembershipId String?  @map("updated_by_membership_id") @db.Uuid
+  createdDateTime       DateTime @default(now()) @map("created_date_time") @db.Timestamptz(3)
+  updatedDateTime       DateTime @default(now()) @updatedAt @map("updated_date_time") @db.Timestamptz(3)
+
+  community           Community                      @relation(fields: [communityId], references: [id], onDelete: Restrict)
+  createdByMembership CommunityMembership?           @relation("PositionCreatedBy", fields: [communityId, createdByMembershipId], references: [communityId, id], onDelete: Restrict)
+  updatedByMembership CommunityMembership?           @relation("PositionUpdatedBy", fields: [communityId, updatedByMembershipId], references: [communityId, id], onDelete: Restrict)
+  assignments         MembershipPositionAssignment[]
+
+  @@unique([communityId, id])
+  @@unique([communityId, code])
+  @@index([communityId, status])
+  @@map("community_positions")
+}
+
+model MembershipPositionAssignment {
+  id                    String    @id @default(uuid()) @db.Uuid
+  communityId           String    @map("community_id") @db.Uuid
+  membershipId          String    @map("membership_id") @db.Uuid
+  positionId            String    @map("position_id") @db.Uuid
+  createdByMembershipId String?   @map("created_by_membership_id") @db.Uuid
+  revokedByMembershipId String?   @map("revoked_by_membership_id") @db.Uuid
+  createdDateTime       DateTime  @default(now()) @map("created_date_time") @db.Timestamptz(3)
+  revokedDateTime       DateTime? @map("revoked_date_time") @db.Timestamptz(3)
+
+  community           Community                 @relation(fields: [communityId], references: [id], onDelete: Restrict)
+  membership          CommunityMembership       @relation("PositionAssignee", fields: [communityId, membershipId], references: [communityId, id], onDelete: Restrict)
+  position            CommunityPosition         @relation(fields: [communityId, positionId], references: [communityId, id], onDelete: Restrict)
+  createdByMembership CommunityMembership?      @relation("PositionAssignmentCreatedBy", fields: [communityId, createdByMembershipId], references: [communityId, id], onDelete: Restrict)
+  revokedByMembership CommunityMembership?      @relation("PositionAssignmentRevokedBy", fields: [communityId, revokedByMembershipId], references: [communityId, id], onDelete: Restrict)
+  financialApprovals  FinancialReportApproval[]
+
+  @@unique([communityId, id])
+  @@unique([communityId, membershipId, id])
+  @@index([communityId, membershipId])
+  @@index([communityId, positionId])
+  @@map("membership_position_assignments")
+}
+
+model CommunityRole {
+  id                    String   @id @default(uuid()) @db.Uuid
+  communityId           String   @map("community_id") @db.Uuid
+  code                  String
+  name                  String
+  description           String?
+  status                Int      @default(1) @db.SmallInt
+  createdByMembershipId String?  @map("created_by_membership_id") @db.Uuid
+  updatedByMembershipId String?  @map("updated_by_membership_id") @db.Uuid
+  createdDateTime       DateTime @default(now()) @map("created_date_time") @db.Timestamptz(3)
+  updatedDateTime       DateTime @default(now()) @updatedAt @map("updated_date_time") @db.Timestamptz(3)
+
+  community           Community            @relation(fields: [communityId], references: [id], onDelete: Restrict)
+  createdByMembership CommunityMembership? @relation("CommunityRoleCreatedBy", fields: [communityId, createdByMembershipId], references: [communityId, id], onDelete: Restrict)
+  updatedByMembership CommunityMembership? @relation("CommunityRoleUpdatedBy", fields: [communityId, updatedByMembershipId], references: [communityId, id], onDelete: Restrict)
+  permissions         RolePermission[]
+  memberships         MembershipRole[]
+
+  @@unique([communityId, id])
+  @@unique([communityId, code])
+  @@index([communityId, status])
+  @@map("community_roles")
+}
+
+model Permission {
+  id              String   @id @default(uuid()) @db.Uuid
+  code            String   @unique
+  name            String
+  description     String?
+  status          Int      @default(1) @db.SmallInt
+  createdByUserId String?  @map("created_by_user_id") @db.Uuid
+  updatedByUserId String?  @map("updated_by_user_id") @db.Uuid
+  createdDateTime DateTime @default(now()) @map("created_date_time") @db.Timestamptz(3)
+  updatedDateTime DateTime @default(now()) @updatedAt @map("updated_date_time") @db.Timestamptz(3)
+
+  createdByUser   User?            @relation("PermissionCreatedBy", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  updatedByUser   User?            @relation("PermissionUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: Restrict)
+  roleAssignments RolePermission[]
+
+  @@index([status])
+  @@map("permissions")
+}
+
+model RolePermission {
+  id                    String    @id @default(uuid()) @db.Uuid
+  communityId           String    @map("community_id") @db.Uuid
+  roleId                String    @map("role_id") @db.Uuid
+  permissionId          String    @map("permission_id") @db.Uuid
+  createdByMembershipId String?   @map("created_by_membership_id") @db.Uuid
+  revokedByMembershipId String?   @map("revoked_by_membership_id") @db.Uuid
+  createdDateTime       DateTime  @default(now()) @map("created_date_time") @db.Timestamptz(3)
+  revokedDateTime       DateTime? @map("revoked_date_time") @db.Timestamptz(3)
+
+  community           Community            @relation(fields: [communityId], references: [id], onDelete: Restrict)
+  role                CommunityRole        @relation(fields: [communityId, roleId], references: [communityId, id], onDelete: Restrict)
+  permission          Permission           @relation(fields: [permissionId], references: [id], onDelete: Restrict)
+  createdByMembership CommunityMembership? @relation("RolePermissionCreatedBy", fields: [communityId, createdByMembershipId], references: [communityId, id], onDelete: Restrict)
+  revokedByMembership CommunityMembership? @relation("RolePermissionRevokedBy", fields: [communityId, revokedByMembershipId], references: [communityId, id], onDelete: Restrict)
+
+  @@unique([communityId, id])
+  @@index([communityId, roleId])
+  @@index([permissionId])
+  @@map("role_permissions")
+}
+
+model MembershipRole {
+  id                    String    @id @default(uuid()) @db.Uuid
+  communityId           String    @map("community_id") @db.Uuid
+  membershipId          String    @map("membership_id") @db.Uuid
+  roleId                String    @map("role_id") @db.Uuid
+  createdByMembershipId String?   @map("created_by_membership_id") @db.Uuid
+  revokedByMembershipId String?   @map("revoked_by_membership_id") @db.Uuid
+  createdDateTime       DateTime  @default(now()) @map("created_date_time") @db.Timestamptz(3)
+  revokedDateTime       DateTime? @map("revoked_date_time") @db.Timestamptz(3)
+
+  community           Community            @relation(fields: [communityId], references: [id], onDelete: Restrict)
+  membership          CommunityMembership  @relation("RoleAssignee", fields: [communityId, membershipId], references: [communityId, id], onDelete: Restrict)
+  role                CommunityRole        @relation(fields: [communityId, roleId], references: [communityId, id], onDelete: Restrict)
+  createdByMembership CommunityMembership? @relation("MembershipRoleCreatedBy", fields: [communityId, createdByMembershipId], references: [communityId, id], onDelete: Restrict)
+  revokedByMembership CommunityMembership? @relation("MembershipRoleRevokedBy", fields: [communityId, revokedByMembershipId], references: [communityId, id], onDelete: Restrict)
+
+  @@unique([communityId, id])
+  @@index([communityId, membershipId])
+  @@index([communityId, roleId])
+  @@map("membership_roles")
+}
+
+model PlatformRole {
+  id              String   @id @default(uuid()) @db.Uuid
+  code            String   @unique
+  name            String
+  description     String?
+  status          Int      @default(1) @db.SmallInt
+  createdByUserId String?  @map("created_by_user_id") @db.Uuid
+  updatedByUserId String?  @map("updated_by_user_id") @db.Uuid
+  createdDateTime DateTime @default(now()) @map("created_date_time") @db.Timestamptz(3)
+  updatedDateTime DateTime @default(now()) @updatedAt @map("updated_date_time") @db.Timestamptz(3)
+
+  createdByUser User?              @relation("PlatformRoleCreatedBy", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  updatedByUser User?              @relation("PlatformRoleUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: Restrict)
+  assignments   UserPlatformRole[]
+
+  @@index([status])
+  @@map("platform_roles")
+}
+
+model UserPlatformRole {
+  id              String    @id @default(uuid()) @db.Uuid
+  userId          String    @map("user_id") @db.Uuid
+  platformRoleId  String    @map("platform_role_id") @db.Uuid
+  createdByUserId String?   @map("created_by_user_id") @db.Uuid
+  revokedByUserId String?   @map("revoked_by_user_id") @db.Uuid
+  createdDateTime DateTime  @default(now()) @map("created_date_time") @db.Timestamptz(3)
+  revokedDateTime DateTime? @map("revoked_date_time") @db.Timestamptz(3)
+
+  user          User         @relation("PlatformRoleAssignee", fields: [userId], references: [id], onDelete: Restrict)
+  platformRole  PlatformRole @relation(fields: [platformRoleId], references: [id], onDelete: Restrict)
+  createdByUser User?        @relation("UserPlatformRoleCreatedBy", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  revokedByUser User?        @relation("UserPlatformRoleRevokedBy", fields: [revokedByUserId], references: [id], onDelete: Restrict)
+
+  @@index([userId])
+  @@index([platformRoleId])
+  @@map("user_platform_roles")
+}
+
+model House {
+  id                    String   @id @default(uuid()) @db.Uuid
+  communityId           String   @map("community_id") @db.Uuid
+  code                  String
+  addressLine           String   @map("address_line")
+  addressDetail         String?  @map("address_detail")
+  status                Int      @default(1) @db.SmallInt
+  createdByMembershipId String?  @map("created_by_membership_id") @db.Uuid
+  updatedByMembershipId String?  @map("updated_by_membership_id") @db.Uuid
+  createdDateTime       DateTime @default(now()) @map("created_date_time") @db.Timestamptz(3)
+  updatedDateTime       DateTime @default(now()) @updatedAt @map("updated_date_time") @db.Timestamptz(3)
+
+  community           Community            @relation(fields: [communityId], references: [id], onDelete: Restrict)
+  createdByMembership CommunityMembership? @relation("HouseCreatedBy", fields: [communityId, createdByMembershipId], references: [communityId, id], onDelete: Restrict)
+  updatedByMembership CommunityMembership? @relation("HouseUpdatedBy", fields: [communityId, updatedByMembershipId], references: [communityId, id], onDelete: Restrict)
+  residencies         Residency[]
+
+  @@unique([communityId, id])
+  @@unique([communityId, code])
+  @@index([communityId, status])
+  @@map("houses")
+}
+
+model Resident {
+  id                    String   @id @default(uuid()) @db.Uuid
+  communityId           String   @map("community_id") @db.Uuid
+  fullName              String   @map("full_name")
+  contactPhone          String?  @map("contact_phone")
+  status                Int      @default(1) @db.SmallInt
+  createdByMembershipId String?  @map("created_by_membership_id") @db.Uuid
+  updatedByMembershipId String?  @map("updated_by_membership_id") @db.Uuid
+  createdDateTime       DateTime @default(now()) @map("created_date_time") @db.Timestamptz(3)
+  updatedDateTime       DateTime @default(now()) @updatedAt @map("updated_date_time") @db.Timestamptz(3)
+
+  community           Community            @relation(fields: [communityId], references: [id], onDelete: Restrict)
+  createdByMembership CommunityMembership? @relation("ResidentCreatedBy", fields: [communityId, createdByMembershipId], references: [communityId, id], onDelete: Restrict)
+  updatedByMembership CommunityMembership? @relation("ResidentUpdatedBy", fields: [communityId, updatedByMembershipId], references: [communityId, id], onDelete: Restrict)
+  residencies         Residency[]
+
+  @@unique([communityId, id])
+  @@index([communityId, status])
+  @@map("residents")
+}
+
+model Residency {
+  id                    String        @id @default(uuid()) @db.Uuid
+  communityId           String        @map("community_id") @db.Uuid
+  residentId            String        @map("resident_id") @db.Uuid
+  houseId               String        @map("house_id") @db.Uuid
+  residencyType         ResidencyType @map("residency_type")
+  startDate             DateTime      @map("start_date") @db.Date
+  endDate               DateTime?     @map("end_date") @db.Date
+  status                Int           @default(1) @db.SmallInt
+  createdByMembershipId String?       @map("created_by_membership_id") @db.Uuid
+  updatedByMembershipId String?       @map("updated_by_membership_id") @db.Uuid
+  createdDateTime       DateTime      @default(now()) @map("created_date_time") @db.Timestamptz(3)
+  updatedDateTime       DateTime      @default(now()) @updatedAt @map("updated_date_time") @db.Timestamptz(3)
+
+  community           Community            @relation(fields: [communityId], references: [id], onDelete: Restrict)
+  resident            Resident             @relation(fields: [communityId, residentId], references: [communityId, id], onDelete: Restrict)
+  house               House                @relation(fields: [communityId, houseId], references: [communityId, id], onDelete: Restrict)
+  createdByMembership CommunityMembership? @relation("ResidencyCreatedBy", fields: [communityId, createdByMembershipId], references: [communityId, id], onDelete: Restrict)
+  updatedByMembership CommunityMembership? @relation("ResidencyUpdatedBy", fields: [communityId, updatedByMembershipId], references: [communityId, id], onDelete: Restrict)
+
+  @@unique([communityId, id])
+  @@index([communityId, residentId, status])
+  @@index([communityId, houseId, status])
+  @@map("residencies")
+}
+
+model FinancialCategory {
+  id                    String             @id @default(uuid()) @db.Uuid
+  communityId           String             @map("community_id") @db.Uuid
+  code                  String
+  name                  String
+  entryType             FinancialEntryType @map("entry_type")
+  status                Int                @default(1) @db.SmallInt
+  createdByMembershipId String?            @map("created_by_membership_id") @db.Uuid
+  updatedByMembershipId String?            @map("updated_by_membership_id") @db.Uuid
+  createdDateTime       DateTime           @default(now()) @map("created_date_time") @db.Timestamptz(3)
+  updatedDateTime       DateTime           @default(now()) @updatedAt @map("updated_date_time") @db.Timestamptz(3)
+
+  community           Community              @relation(fields: [communityId], references: [id], onDelete: Restrict)
+  createdByMembership CommunityMembership?   @relation("FinancialCategoryCreatedBy", fields: [communityId, createdByMembershipId], references: [communityId, id], onDelete: Restrict)
+  updatedByMembership CommunityMembership?   @relation("FinancialCategoryUpdatedBy", fields: [communityId, updatedByMembershipId], references: [communityId, id], onDelete: Restrict)
+  entries             FinancialReportEntry[]
+
+  @@unique([communityId, id])
+  @@unique([communityId, id, entryType])
+  @@unique([communityId, code])
+  @@index([communityId, status])
+  @@map("financial_categories")
+}
+
+model FinancialReport {
+  id                    String               @id @default(uuid()) @db.Uuid
+  communityId           String               @map("community_id") @db.Uuid
+  periodStart           DateTime             @map("period_start") @db.Date
+  periodEnd             DateTime             @map("period_end") @db.Date
+  revisionNumber        Int                  @map("revision_number")
+  openingBalanceMinor   BigInt               @map("opening_balance_minor")
+  currency              String               @default("IDR")
+  workflowStage         FinancialReportStage @default(DRAFT) @map("workflow_stage")
+  supersedesReportId    String?              @map("supersedes_report_id") @db.Uuid
+  status                Int                  @default(1) @db.SmallInt
+  createdByMembershipId String?              @map("created_by_membership_id") @db.Uuid
+  updatedByMembershipId String?              @map("updated_by_membership_id") @db.Uuid
+  createdDateTime       DateTime             @default(now()) @map("created_date_time") @db.Timestamptz(3)
+  updatedDateTime       DateTime             @default(now()) @updatedAt @map("updated_date_time") @db.Timestamptz(3)
+
+  community           Community                           @relation(fields: [communityId], references: [id], onDelete: Restrict)
+  createdByMembership CommunityMembership?                @relation("FinancialReportCreatedBy", fields: [communityId, createdByMembershipId], references: [communityId, id], onDelete: Restrict)
+  updatedByMembership CommunityMembership?                @relation("FinancialReportUpdatedBy", fields: [communityId, updatedByMembershipId], references: [communityId, id], onDelete: Restrict)
+  supersedesReport    FinancialReport?                    @relation("FinancialReportRevision", fields: [communityId, periodStart, periodEnd, supersedesReportId], references: [communityId, periodStart, periodEnd, id], onDelete: Restrict)
+  supersededByReport  FinancialReport?                    @relation("FinancialReportRevision")
+  entries             FinancialReportEntry[]
+  approvals           FinancialReportApproval[]
+  publicationSnapshot FinancialReportPublicationSnapshot?
+
+  @@unique([communityId, id])
+  @@unique([communityId, periodStart, periodEnd, id])
+  @@unique([communityId, periodStart, periodEnd, supersedesReportId])
+  @@unique([communityId, periodStart, periodEnd, revisionNumber])
+  @@index([communityId, workflowStage, status])
+  @@map("financial_reports")
+}
+
+model FinancialReportEntry {
+  id                    String             @id @default(uuid()) @db.Uuid
+  communityId           String             @map("community_id") @db.Uuid
+  reportId              String             @map("report_id") @db.Uuid
+  categoryId            String             @map("category_id") @db.Uuid
+  entryType             FinancialEntryType @map("entry_type")
+  transactionDate       DateTime           @map("transaction_date") @db.Date
+  description           String
+  amountMinor           BigInt             @map("amount_minor")
+  status                Int                @default(1) @db.SmallInt
+  createdByMembershipId String?            @map("created_by_membership_id") @db.Uuid
+  updatedByMembershipId String?            @map("updated_by_membership_id") @db.Uuid
+  createdDateTime       DateTime           @default(now()) @map("created_date_time") @db.Timestamptz(3)
+  updatedDateTime       DateTime           @default(now()) @updatedAt @map("updated_date_time") @db.Timestamptz(3)
+
+  community           Community            @relation(fields: [communityId], references: [id], onDelete: Restrict)
+  report              FinancialReport      @relation(fields: [communityId, reportId], references: [communityId, id], onDelete: Restrict)
+  category            FinancialCategory    @relation(fields: [communityId, categoryId, entryType], references: [communityId, id, entryType], onDelete: Restrict)
+  createdByMembership CommunityMembership? @relation("FinancialEntryCreatedBy", fields: [communityId, createdByMembershipId], references: [communityId, id], onDelete: Restrict)
+  updatedByMembership CommunityMembership? @relation("FinancialEntryUpdatedBy", fields: [communityId, updatedByMembershipId], references: [communityId, id], onDelete: Restrict)
+
+  @@unique([communityId, id])
+  @@index([communityId, reportId, status])
+  @@index([communityId, categoryId])
+  @@map("financial_report_entries")
+}
+
+model FinancialReportApproval {
+  id                    String                    @id @default(uuid()) @db.Uuid
+  communityId           String                    @map("community_id") @db.Uuid
+  reportId              String                    @map("report_id") @db.Uuid
+  positionAssignmentId  String                    @map("position_assignment_id") @db.Uuid
+  decision              FinancialApprovalDecision
+  privateNote           String?                   @map("private_note")
+  createdByMembershipId String                    @map("created_by_membership_id") @db.Uuid
+  createdDateTime       DateTime                  @default(now()) @map("created_date_time") @db.Timestamptz(3)
+
+  community           Community                    @relation(fields: [communityId], references: [id], onDelete: Restrict)
+  report              FinancialReport              @relation(fields: [communityId, reportId], references: [communityId, id], onDelete: Restrict)
+  positionAssignment  MembershipPositionAssignment @relation(fields: [communityId, createdByMembershipId, positionAssignmentId], references: [communityId, membershipId, id], onDelete: Restrict, map: "financial_approvals_position_actor_fkey")
+  createdByMembership CommunityMembership          @relation("FinancialApprovalCreatedBy", fields: [communityId, createdByMembershipId], references: [communityId, id], onDelete: Restrict, map: "financial_approvals_created_by_fkey")
+
+  @@unique([communityId, id])
+  @@index([communityId, reportId, createdDateTime])
+  @@map("financial_report_approvals")
+}
+
+model Publication {
+  id                      String          @id @default(uuid()) @db.Uuid
+  communityId             String          @map("community_id") @db.Uuid
+  seriesId                String          @default(uuid()) @map("series_id") @db.Uuid
+  publicId                String          @unique @default(cuid()) @map("public_id")
+  publicationType         PublicationType @map("publication_type")
+  revisionNumber          Int             @map("revision_number")
+  supersedesPublicationId String?         @map("supersedes_publication_id") @db.Uuid
+  createdByMembershipId   String          @map("created_by_membership_id") @db.Uuid
+  createdDateTime         DateTime        @default(now()) @map("created_date_time") @db.Timestamptz(3)
+
+  community               Community                           @relation(fields: [communityId], references: [id], onDelete: Restrict)
+  createdByMembership     CommunityMembership                 @relation("PublicationCreatedBy", fields: [communityId, createdByMembershipId], references: [communityId, id], onDelete: Restrict)
+  supersedesPublication   Publication?                        @relation("PublicationRevision", fields: [communityId, seriesId, supersedesPublicationId], references: [communityId, seriesId, id], onDelete: Restrict)
+  supersededByPublication Publication?                        @relation("PublicationRevision")
+  financialReportSnapshot FinancialReportPublicationSnapshot?
+
+  @@unique([communityId, id])
+  @@unique([communityId, seriesId, id])
+  @@unique([communityId, seriesId, supersedesPublicationId])
+  @@unique([communityId, publicationType, seriesId, revisionNumber])
+  @@index([communityId, publicationType, createdDateTime])
+  @@map("publications")
+}
+
+model FinancialReportPublicationSnapshot {
+  id                    String   @id @default(uuid()) @db.Uuid
+  communityId           String   @map("community_id") @db.Uuid
+  publicationId         String   @map("publication_id") @db.Uuid
+  sourceReportId        String   @map("source_report_id") @db.Uuid
+  periodStart           DateTime @map("period_start") @db.Date
+  periodEnd             DateTime @map("period_end") @db.Date
+  currency              String
+  openingBalanceMinor   BigInt   @map("opening_balance_minor")
+  incomeTotalMinor      BigInt   @map("income_total_minor")
+  expenseTotalMinor     BigInt   @map("expense_total_minor")
+  closingBalanceMinor   BigInt   @map("closing_balance_minor")
+  schemaVersion         Int      @map("schema_version")
+  checksum              String
+  payload               Json
+  createdByMembershipId String   @map("created_by_membership_id") @db.Uuid
+  createdDateTime       DateTime @default(now()) @map("created_date_time") @db.Timestamptz(3)
+
+  community           Community           @relation(fields: [communityId], references: [id], onDelete: Restrict)
+  publication         Publication         @relation(fields: [communityId, publicationId], references: [communityId, id], onDelete: Restrict)
+  sourceReport        FinancialReport     @relation(fields: [communityId, sourceReportId], references: [communityId, id], onDelete: Restrict)
+  createdByMembership CommunityMembership @relation("PublicationSnapshotCreatedBy", fields: [communityId, createdByMembershipId], references: [communityId, id], onDelete: Restrict)
+
+  @@unique([communityId, id])
+  @@unique([communityId, publicationId])
+  @@unique([communityId, sourceReportId])
+  @@index([communityId, periodStart, periodEnd])
+  @@map("financial_report_publication_snapshots")
+}
+
+model AuditEvent {
+  id                    String         @id @default(uuid()) @db.Uuid
+  communityId           String         @map("community_id") @db.Uuid
+  actorType             AuditActorType @map("actor_type")
+  createdByMembershipId String?        @map("created_by_membership_id") @db.Uuid
+  action                String
+  targetType            String         @map("target_type")
+  targetId              String         @map("target_id") @db.Uuid
+  requestId             String?        @map("request_id")
+  metadata              Json?
+  createdDateTime       DateTime       @default(now()) @map("created_date_time") @db.Timestamptz(3)
+
+  community           Community            @relation(fields: [communityId], references: [id], onDelete: Restrict)
+  createdByMembership CommunityMembership? @relation("AuditEventCreatedBy", fields: [communityId, createdByMembershipId], references: [communityId, id], onDelete: Restrict)
+
+  @@unique([communityId, id])
+  @@index([communityId, createdDateTime(sort: Desc)])
+  @@index([communityId, targetType, targetId])
+  @@map("audit_events")
+}

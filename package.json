@@ -18,6 +18,12 @@
     "test": "nx run-many -t test",
     "build": "nx run-many -t build",
     "e2e": "nx run-many -t e2e",
+    "db:generate": "prisma generate",
+    "db:validate": "prisma validate",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate:check": "prisma migrate diff --exit-code --from-migrations prisma/migrations --to-schema prisma/schema.prisma",
+    "db:migrate:status": "prisma migrate status",
+    "db:test": "node tools/database/verify-test-database.mjs",
     "verify": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build"
   },
   "devDependencies": {

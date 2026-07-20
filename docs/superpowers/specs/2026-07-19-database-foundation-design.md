@@ -26,7 +26,7 @@ Local development uses three databases on the existing PostgreSQL server:
 - `smart_citizen_test`: integration-test schema.
 - `smart_citizen_shadow`: Prisma migration shadow database.
 
-The local `smart_citizen_app` role may connect without a password when the developer's PostgreSQL authentication policy permits it. Example environment values omit the password component and never contain credentials.
+The local `smart_citizen_app` role authenticates with a developer-managed password. Example environment values use a safe placeholder and never contain credentials.
 
 Prisma owns all application tables. Tables must not be created or changed manually through pgAdmin.
 
@@ -151,13 +151,13 @@ Moving out sets the residency end date and makes the residency inactive. The res
 
 ### `financial_categories`
 
-Defines community-owned income and expense categories. Category codes are unique within a community. Categories have lifecycle and tenant actor metadata.
+Defines community-owned income and expense categories. Category codes are unique within a community. A compound category key ensures that an entry cannot claim a different income or expense type from its category. Categories have lifecycle and tenant actor metadata.
 
 ### `financial_reports`
 
 Stores a community-owned reporting period, revision number, opening balance, currency, workflow stage, and optional link to the report revision it supersedes. Workflow stages are `DRAFT`, `UNDER_REVIEW`, and `APPROVED`; workflow stage is separate from lifecycle status.
 
-Constraints enforce valid date ranges, positive revision numbers, a unique revision within a community and period, and a same-community supersession link. A superseded report may have at most one direct successor so revision history remains linear.
+Constraints enforce valid date ranges, positive revision numbers, a unique revision within a community and period, and a same-community, same-period supersession link. A superseded report may have at most one direct successor so revision history remains linear.
 
 ### `financial_report_entries`
 
@@ -167,7 +167,7 @@ Entries contain lifecycle and tenant actor metadata. Application services will l
 
 ### `financial_report_approvals`
 
-Stores immutable approval decision history. Each record contains the report, decision, private note when provided, approving membership, the relevant position assignment context, and creation timestamp.
+Stores immutable approval decision history. Each record contains the report, decision, private note when provided, approving membership, the relevant position assignment context, and creation timestamp. A compound foreign key guarantees that the recorded position assignment belongs to the approving membership.
 
 Approval decisions are `APPROVED`, `REJECTED`, or `CHANGES_REQUESTED`. The database preserves who decided and their position context. Application authorization will later enforce that Pak RT alone can provide final pilot approval.
 
@@ -182,10 +182,13 @@ A correction to an approved or published report creates a new report revision li
 Stores immutable community-owned publication metadata:
 
 - Random public ID.
+- Internal publication series ID.
 - Publication type.
 - Revision number.
 - Publishing membership and timestamp.
 - Optional same-community link to the publication it supersedes.
+
+Publication revision numbers are unique within a community, publication type, and series. Supersession must remain inside the same series, allowing each monthly report to begin at revision one without colliding with other reports.
 
 ### `financial_report_publication_snapshots`
 
