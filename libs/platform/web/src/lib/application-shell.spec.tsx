@@ -42,12 +42,7 @@ function renderShell(enabledNavigation = new Set<NavigationKey>(['overview', 'ho
         <Route path="/sign-in" element={<h1>Signed out</h1>} />
         <Route element={<SessionBoundary />}>
           <Route
-            element={
-              <ApplicationShell
-                enabledNavigation={enabledNavigation}
-                onSignOut={signOut}
-              />
-            }
+            element={<ApplicationShell enabledNavigation={enabledNavigation} onSignOut={signOut} />}
           >
             <Route index element={<h2>Overview content</h2>} />
           </Route>
@@ -81,10 +76,7 @@ describe('ApplicationShell', () => {
     renderShell();
 
     expect(screen.getByText('RT 05 Taman Warga')).toBeVisible();
-    expect(screen.getByRole('link', { name: 'Overview' })).toHaveAttribute(
-      'aria-current',
-      'page',
-    );
+    expect(screen.getByRole('link', { name: 'Overview' })).toHaveAttribute('aria-current', 'page');
     expect(screen.queryByRole('link', { name: 'Houses' })).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Overview content' })).toBeVisible();
   });

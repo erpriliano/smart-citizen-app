@@ -54,12 +54,7 @@ function NotFoundPage() {
       <p className="mt-2 text-sm leading-6 text-muted-foreground">
         This page is not available in the administrative workspace.
       </p>
-      <Button
-        className="mt-6"
-        nativeButton={false}
-        render={<Link to="/" />}
-        variant="outline"
-      >
+      <Button className="mt-6" nativeButton={false} render={<Link to="/" />} variant="outline">
         Return to overview
       </Button>
     </section>

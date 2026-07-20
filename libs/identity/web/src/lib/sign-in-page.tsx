@@ -97,7 +97,7 @@ export function SignInPage() {
                 id="email"
                 type="email"
                 autoComplete="username"
-                autoFocus
+                spellCheck={false}
                 aria-invalid={Boolean(form.formState.errors.email)}
                 aria-describedby={form.formState.errors.email ? 'email-error' : undefined}
                 disabled={signIn.isPending}

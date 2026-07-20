@@ -501,7 +501,7 @@ git commit -m "feat(web): compose the authenticated pilot foundation"
 
 - Produces: verified Slice 1 branch and accurate delivery status.
 
-- [ ] **Step 1: Run full repository verification**
+- [x] **Step 1: Run full repository verification**
 
 Run:
 
@@ -518,15 +518,15 @@ git diff --check
 git status --short
 ```
 
-- [ ] **Step 2: Run browser visual and accessibility review**
+- [x] **Step 2: Run browser visual and accessibility review**
 
 Use Playwright because no Browser plugin is available. Capture 1440 by 1000, 768 by 1024, and 375 by 812 screenshots. Inspect them with `view_image` for typography, Emerald + Graphite colour fidelity, spacing, stable controls, navigation, privacy gating, overflow, focus visibility, and unsupported decorative card usage.
 
-- [ ] **Step 3: Review exposure boundaries**
+- [x] **Step 3: Review exposure boundaries**
 
 Confirm cookies are HTTP-only, unauthorised responses are generic, session DTOs contain no credential fields, tenant session queries include `communityId`, unauthorised navigation is absent, and private administrative content is absent below 768 px.
 
-- [ ] **Step 4: Commit final verification corrections**
+- [x] **Step 4: Commit final verification corrections**
 
 Commit only if verification required source changes:
 

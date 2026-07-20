@@ -28,9 +28,9 @@ function SessionBoundary() {
 
 describe('WeeklyOverviewPage', () => {
   it('formats the community week in Indonesian', () => {
-    expect(
-      formatWeekRange(new Date('2026-07-20T08:00:00.000Z'), 'Asia/Jakarta'),
-    ).toBe('20–26 Juli 2026');
+    expect(formatWeekRange(new Date('2026-07-20T08:00:00.000Z'), 'Asia/Jakarta')).toBe(
+      '20–26 Juli 2026',
+    );
   });
 
   it('shows real session context without invented operational data', () => {

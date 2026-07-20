@@ -75,11 +75,15 @@ test('keeps Sign In usable and keyboard accessible at 375 pixels', async ({ page
 
   await expect(page).toHaveTitle('Smart Citizen');
   await expect(page.getByRole('heading', { level: 1, name: 'Smart Citizen' })).toBeVisible();
+  await page.keyboard.press('Tab');
   await expect(page.getByLabel('Email address')).toBeFocused();
   await page.keyboard.press('Tab');
   await expect(page.getByLabel('Password')).toBeFocused();
   await page.keyboard.press('Tab');
   await expect(page.getByRole('button', { name: 'Sign in' })).toBeFocused();
+  const signInButtonBox = await page.getByRole('button', { name: 'Sign in' }).boundingBox();
+  expect(signInButtonBox?.width).toBeGreaterThan(250);
+  expect(signInButtonBox?.height).toBeGreaterThanOrEqual(40);
   await expectNoHorizontalOverflow(page);
   expect(browserErrors).toEqual([]);
 });
@@ -116,6 +120,8 @@ test('renders the authenticated workspace at tablet and desktop widths', async (
       'aria-current',
       'page',
     );
+    const sidebarBox = await page.locator('aside').boundingBox();
+    expect(sidebarBox?.width).toBe(viewport.width === 1440 ? 248 : 80);
     await expectNoHorizontalOverflow(page);
   }
 

@@ -1,10 +1,6 @@
 import type { SessionContext } from '@smart-citizen/identity-contracts';
 
-import {
-  allNavigationKeys,
-  getPermittedNavigation,
-  type NavigationKey,
-} from './navigation';
+import { allNavigationKeys, getPermittedNavigation, type NavigationKey } from './navigation';
 
 const baseSession: SessionContext = {
   user: {

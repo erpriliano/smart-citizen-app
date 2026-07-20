@@ -16,11 +16,7 @@ import {
   TooltipTrigger,
 } from '@smart-citizen/shared-ui';
 import { AdministrativeViewportGate } from './administrative-viewport-gate';
-import {
-  getPermittedNavigation,
-  sliceOneNavigationKeys,
-  type NavigationKey,
-} from './navigation';
+import { getPermittedNavigation, sliceOneNavigationKeys, type NavigationKey } from './navigation';
 
 export interface ApplicationShellProps {
   enabledNavigation?: ReadonlySet<NavigationKey>;
@@ -50,6 +46,12 @@ export function ApplicationShell({
     <AdministrativeViewportGate>
       <TooltipProvider>
         <div className="grid min-h-screen grid-cols-[5rem_minmax(0,1fr)] bg-background lg:grid-cols-[15.5rem_minmax(0,1fr)]">
+          <a
+            className="fixed top-3 left-3 z-50 -translate-y-20 rounded-md bg-foreground px-3 py-2 text-sm font-medium text-background transition-transform focus-visible:translate-y-0 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/30"
+            href="#main-content"
+          >
+            Skip to main content
+          </a>
           <aside className="flex min-h-screen flex-col border-r bg-card px-3 py-4 lg:px-4">
             <div className="flex h-10 items-center justify-center gap-3 lg:justify-start lg:px-2">
               <span className="grid size-8 shrink-0 place-items-center rounded-md bg-primary text-sm font-semibold text-primary-foreground">
@@ -123,10 +125,7 @@ export function ApplicationShell({
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
-                    <DropdownMenuItem
-                      disabled={isSigningOut}
-                      onClick={() => void handleSignOut()}
-                    >
+                    <DropdownMenuItem disabled={isSigningOut} onClick={() => void handleSignOut()}>
                       <LogOutIcon aria-hidden="true" />
                       {isSigningOut ? 'Signing out…' : 'Sign out'}
                     </DropdownMenuItem>
@@ -135,7 +134,11 @@ export function ApplicationShell({
               </DropdownMenu>
             </header>
 
-            <main className="mx-auto w-full max-w-7xl px-6 py-8 lg:px-10 lg:py-10">
+            <main
+              className="mx-auto w-full max-w-7xl px-6 py-8 lg:px-10 lg:py-10"
+              id="main-content"
+              tabIndex={-1}
+            >
               <Outlet context={session} />
             </main>
           </div>

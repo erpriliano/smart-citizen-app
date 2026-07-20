@@ -76,9 +76,7 @@ export function WeeklyOverviewPage({ now = new Date() }: WeeklyOverviewPageProps
           <div className="border-r px-4 py-4">
             <dt className="text-xs text-muted-foreground">Position</dt>
             <dd className="mt-1 text-sm font-medium">
-              {officerPositions.length > 0
-                ? officerPositions.join(', ')
-                : 'Administrative officer'}
+              {officerPositions.length > 0 ? officerPositions.join(', ') : 'Administrative officer'}
             </dd>
           </div>
           <div className="col-span-2 border-t px-4 py-4 md:col-span-1 md:border-t-0">

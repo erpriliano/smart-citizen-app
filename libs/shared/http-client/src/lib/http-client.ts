@@ -27,9 +27,7 @@ export function createHttpClient(options: CreateHttpClientOptions): HttpClient {
   const client = axios.create({
     baseURL: options.baseURL,
     timeout: options.timeoutMs ?? DEFAULT_TIMEOUT_MS,
-    ...(options.withCredentials === undefined
-      ? {}
-      : { withCredentials: options.withCredentials }),
+    ...(options.withCredentials === undefined ? {} : { withCredentials: options.withCredentials }),
     headers: {
       Accept: 'application/json',
     },

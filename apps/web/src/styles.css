@@ -1,6 +1,10 @@
 @import '@fontsource-variable/geist';
 @import 'tailwindcss';
 
+@source '../../../libs/identity/web/src';
+@source '../../../libs/platform/web/src';
+@source '../../../libs/shared/ui/src';
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -99,6 +103,13 @@ body {
 button:not(:disabled),
 [role='button']:not(:disabled) {
   cursor: pointer;
+  touch-action: manipulation;
+}
+
+a,
+button,
+[role='button'] {
+  -webkit-tap-highlight-color: color-mix(in srgb, var(--primary) 20%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {
