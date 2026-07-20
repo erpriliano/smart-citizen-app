@@ -399,11 +399,11 @@ git commit -m "feat(identity): add administrative sign-in experience"
 - Consumes: `SessionContext`, `useSignOutMutation`, React Router, shared UI, and Lucide icons.
 - Produces: `getPermittedNavigation(session)`, `ApplicationShell`, `AdministrativeViewportGate`, and `WeeklyOverviewPage`.
 
-- [ ] **Step 1: Write failing navigation and shell tests**
+- [x] **Step 1: Write failing navigation and shell tests**
 
 Cover permission-filtered navigation, no position-name inference, current-route indication, community identity, account menu, sign-out, keyboard-accessible mobile/tablet navigation, and absence of unauthorised links.
 
-- [ ] **Step 2: Run platform web tests and confirm failure**
+- [x] **Step 2: Run platform web tests and confirm failure**
 
 Run:
 
@@ -411,19 +411,19 @@ Run:
 pnpm exec nx run platform-web:test
 ```
 
-- [ ] **Step 3: Implement explicit navigation policy**
+- [x] **Step 3: Implement explicit navigation policy**
 
 Each navigation entry declares an exact required permission code or `null` for Overview. `getPermittedNavigation` filters by the session permission set. Position codes and labels are display-only.
 
-- [ ] **Step 4: Implement the shell and viewport privacy gate**
+- [x] **Step 4: Implement the shell and viewport privacy gate**
 
 Use a 248 px desktop sidebar, a compact tablet navigation control, a stable utility header, semantic landmarks, and visible focus. At widths below 768 px, hide administrative content with CSS and show `Continue on a tablet or larger screen`; no private text remains visible.
 
-- [ ] **Step 5: Implement an honest Weekly Overview**
+- [x] **Step 5: Implement an honest Weekly Overview**
 
 Show the community name, an Indonesian-formatted current week range, the signed-in officer's position/role labels, and an empty-state statement that operational summaries appear as each domain is connected. Do not render fake counts, charts, reports, residents, or approval tasks.
 
-- [ ] **Step 6: Run platform web tests and commit**
+- [x] **Step 6: Run platform web tests and commit**
 
 Run:
 
