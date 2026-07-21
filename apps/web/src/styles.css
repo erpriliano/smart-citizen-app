@@ -1,25 +1,124 @@
 @import '@fontsource-variable/geist';
 @import 'tailwindcss';
 
+@source '../../../libs/identity/web/src';
+@source '../../../libs/platform/web/src';
+@source '../../../libs/shared/ui/src';
+
+@custom-variant dark (&:is(.dark *));
+
 :root {
+  --background: #f7f8f7;
+  --foreground: #18181b;
+  --card: #ffffff;
+  --card-foreground: #18181b;
+  --popover: #ffffff;
+  --popover-foreground: #18181b;
+  --primary: #047857;
+  --primary-foreground: #ffffff;
+  --secondary: #eef1ef;
+  --secondary-foreground: #272b29;
+  --muted: #eef1ef;
+  --muted-foreground: #5f6368;
+  --accent: #e4e9e6;
+  --accent-foreground: #18181b;
+  --destructive: #b91c1c;
+  --border: #dde1de;
+  --input: #cfd5d1;
+  --ring: #047857;
+  --radius: 0.375rem;
   font-family: 'Geist Variable', system-ui, sans-serif;
-  color: #18181b;
-  background: #fafafa;
+  color: var(--foreground);
+  background: var(--background);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
 
+@theme inline {
+  --font-sans: 'Geist Variable', system-ui, sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+.dark {
+  --background: #101312;
+  --foreground: #f4f4f5;
+  --card: #191d1b;
+  --card-foreground: #f4f4f5;
+  --popover: #202522;
+  --popover-foreground: #f4f4f5;
+  --primary: #34d399;
+  --primary-foreground: #07261b;
+  --secondary: #292f2c;
+  --secondary-foreground: #f4f4f5;
+  --muted: #292f2c;
+  --muted-foreground: #a1a7a3;
+  --accent: #343a37;
+  --accent-foreground: #f4f4f5;
+  --destructive: #f87171;
+  --border: #343a37;
+  --input: #404743;
+  --ring: #34d399;
+}
+
 * {
   box-sizing: border-box;
+  border-color: var(--border);
 }
 
 html {
   min-width: 320px;
-  background: #fafafa;
+  background: var(--background);
 }
 
 body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  letter-spacing: 0;
+}
+
+button:not(:disabled),
+[role='button']:not(:disabled) {
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+a,
+button,
+[role='button'] {
+  -webkit-tap-highlight-color: color-mix(in srgb, var(--primary) 20%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

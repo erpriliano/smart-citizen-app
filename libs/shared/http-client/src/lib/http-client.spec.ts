@@ -44,6 +44,15 @@ describe('createHttpClient', () => {
     expect(client.defaults.timeout).toBe(25_000);
   });
 
+  it('forwards credentialed request configuration for HTTP-only sessions', () => {
+    const client = createHttpClient({
+      baseURL: 'https://api.example.test/api/v1',
+      withCredentials: true,
+    });
+
+    expect(client.defaults.withCredentials).toBe(true);
+  });
+
   it.each([
     ['synchronous', () => 'access-token'],
     ['asynchronous', async () => 'access-token'],

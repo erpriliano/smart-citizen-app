@@ -26,7 +26,22 @@
   "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"],
   "references": [
     {
+      "path": "../../libs/platform/web/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/shared/ui/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/platform/contracts/tsconfig.lib.json"
+    },
+    {
       "path": "../../libs/shared/http-client/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/identity/web/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/identity/contracts/tsconfig.lib.json"
     }
   ]
 }

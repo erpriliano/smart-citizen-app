@@ -1,54 +1,144 @@
-import { Route, Routes } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
+import { Link, Route, Routes } from 'react-router-dom';
+import {
+  createIdentityClient,
+  IdentityProvider,
+  ProtectedRoute,
+  SignInPage,
+  useSignOutMutation,
+  type IdentityClient,
+} from '@smart-citizen/identity-web';
+import { administrativeRoutePaths } from '@smart-citizen/platform-contracts';
+import { Button, Skeleton } from '@smart-citizen/shared-ui';
 
-function WorkspaceOverview() {
+import { apiClient } from './http-client';
+
+const ApplicationShell = lazy(async () => {
+  const platform = await import('@smart-citizen/platform-web');
+  return { default: platform.ApplicationShell };
+});
+
+const WeeklyOverviewPage = lazy(async () => {
+  const platform = await import('@smart-citizen/platform-web');
+  return { default: platform.WeeklyOverviewPage };
+});
+
+const productionIdentityClient = createIdentityClient(apiClient);
+
+const plannedAdministrativeRoutes = [
+  { path: administrativeRoutePaths.houses, title: 'Houses' },
+  { path: administrativeRoutePaths.residents, title: 'Residents' },
+  { path: administrativeRoutePaths.residencyChanges, title: 'Residency changes' },
+  { path: administrativeRoutePaths.financialReports, title: 'Financial reports' },
+  {
+    path: administrativeRoutePaths.financialReportWorkspace,
+    title: 'Financial report workspace',
+  },
+  { path: administrativeRoutePaths.publications, title: 'Publications' },
+  { path: administrativeRoutePaths.team, title: 'Team and access' },
+  { path: administrativeRoutePaths.audit, title: 'Audit trail' },
+  { path: administrativeRoutePaths.settings, title: 'Community settings' },
+] as const;
+
+interface UnavailablePageProps {
+  message: string;
+  standalone?: boolean;
+  title: string;
+}
+
+function UnavailablePage({ message, standalone = false, title }: UnavailablePageProps) {
+  const content = (
+    <section className="max-w-xl py-8">
+      <h1 className="text-2xl font-semibold text-foreground">{title}</h1>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">{message}</p>
+    </section>
+  );
+
+  if (standalone) {
+    return <main className="min-h-screen bg-background px-6 py-12">{content}</main>;
+  }
+
+  return content;
+}
+
+function RouteLoadingState() {
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="max-w-2xl">
-        <p className="mb-2 text-sm font-medium text-emerald-700">RT community workspace</p>
-        <h2 className="text-2xl font-semibold text-zinc-950 sm:text-3xl">Workspace overview</h2>
-        <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-600 sm:text-base">
-          No community data has been configured.
-        </p>
+    <main
+      aria-busy="true"
+      aria-label="Loading page"
+      className="grid min-h-screen place-items-center bg-background px-6"
+    >
+      <div className="flex w-full max-w-sm flex-col gap-4">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-3/4" />
       </div>
-
-      <section
-        aria-label="Workspace status"
-        className="mt-8 border border-zinc-200 bg-white px-5 py-8 shadow-sm sm:px-8"
-      >
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm font-semibold text-zinc-900">Community setup</p>
-            <p className="mt-1 text-sm leading-6 text-zinc-600">
-              The workspace is ready for the first pilot configuration.
-            </p>
-          </div>
-          <span className="w-fit rounded-md bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-800 ring-1 ring-amber-200">
-            Not configured
-          </span>
-        </div>
-      </section>
     </main>
   );
 }
 
-export function App() {
+function AuthenticatedWorkspace() {
+  const signOut = useSignOutMutation();
+
+  return <ApplicationShell onSignOut={() => signOut.mutateAsync()} />;
+}
+
+function NotFoundPage() {
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-950">
-      <header className="border-b border-zinc-200 bg-white">
-        <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-3 px-4 sm:px-6 lg:px-8">
-          <span
-            aria-hidden="true"
-            className="grid size-9 place-items-center rounded-md bg-emerald-700 text-sm font-semibold text-white"
-          >
-            SC
-          </span>
-          <h1 className="text-lg font-semibold">Smart Citizen</h1>
-        </div>
-      </header>
-      <Routes>
-        <Route path="*" element={<WorkspaceOverview />} />
-      </Routes>
-    </div>
+    <section className="max-w-xl py-8">
+      <p className="text-sm font-medium text-primary">404</p>
+      <h1 className="mt-2 text-2xl font-semibold">Page not found</h1>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">
+        This page is not available in the administrative workspace.
+      </p>
+      <Button className="mt-6" nativeButton={false} render={<Link to="/" />} variant="outline">
+        Return to overview
+      </Button>
+    </section>
+  );
+}
+
+export interface AppProps {
+  identityClient?: IdentityClient;
+}
+
+export function App({ identityClient = productionIdentityClient }: AppProps) {
+  return (
+    <IdentityProvider client={identityClient}>
+      <Suspense fallback={<RouteLoadingState />}>
+        <Routes>
+          <Route path="/sign-in" element={<SignInPage />} />
+          <Route
+            path="/p/finance/:publicId"
+            element={
+              <UnavailablePage
+                message="This publication is not available yet."
+                standalone
+                title="Public financial report"
+              />
+            }
+          />
+          <Route element={<ProtectedRoute />}>
+            <Route element={<AuthenticatedWorkspace />}>
+              <Route index element={<WeeklyOverviewPage />} />
+              {plannedAdministrativeRoutes.map((route) => (
+                <Route
+                  element={
+                    <UnavailablePage
+                      message="This page is not available yet."
+                      title={route.title}
+                    />
+                  }
+                  key={route.path}
+                  path={route.path}
+                />
+              ))}
+              <Route path="*" element={<NotFoundPage />} />
+            </Route>
+          </Route>
+        </Routes>
+      </Suspense>
+    </IdentityProvider>
   );
 }
 

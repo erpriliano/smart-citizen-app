@@ -10,6 +10,27 @@
     },
     {
       "path": "./libs/shared/http-client"
+    },
+    {
+      "path": "./libs/shared/database"
+    },
+    {
+      "path": "./libs/identity/contracts"
+    },
+    {
+      "path": "./libs/identity/api"
+    },
+    {
+      "path": "./libs/identity/web"
+    },
+    {
+      "path": "./libs/shared/ui"
+    },
+    {
+      "path": "./libs/platform/web"
+    },
+    {
+      "path": "./libs/platform/contracts"
     }
   ]
 }

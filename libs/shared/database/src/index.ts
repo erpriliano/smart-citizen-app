@@ -1,2 +1,2 @@
-/** Shared database infrastructure. Domain persistence stays in domain API libraries. */
-export {};
+export * from './lib/database.module';
+export * from './lib/database.service';
