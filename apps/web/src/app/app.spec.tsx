@@ -82,6 +82,50 @@ describe('App', () => {
     expect(screen.queryByText('No community data has been configured.')).not.toBeInTheDocument();
   });
 
+  it('registers unfinished administrative routes inside the protected workspace', async () => {
+    const client: IdentityClient = {
+      getSession: vi.fn().mockResolvedValue(session),
+      signIn: vi.fn(),
+      signOut: vi.fn().mockResolvedValue(undefined),
+    };
+
+    renderApp(client, '/houses');
+
+    expect(await screen.findByRole('heading', { name: 'Houses' })).toBeVisible();
+    expect(screen.getByText('This page is not available yet.')).toBeVisible();
+    expect(screen.getAllByText('RT 05 Taman Warga')).toHaveLength(1);
+  });
+
+  it('registers the canonical financial report workspace route', async () => {
+    const client: IdentityClient = {
+      getSession: vi.fn().mockResolvedValue(session),
+      signIn: vi.fn(),
+      signOut: vi.fn().mockResolvedValue(undefined),
+    };
+
+    renderApp(client, '/finance/reports/83d2846d-3f85-4982-b28e-6ec19916fab9');
+
+    expect(
+      await screen.findByRole('heading', { name: 'Financial report workspace' }),
+    ).toBeVisible();
+    expect(screen.queryByRole('heading', { name: 'Page not found' })).not.toBeInTheDocument();
+  });
+
+  it('keeps the public financial report route outside the administrative session boundary', async () => {
+    const client: IdentityClient = {
+      getSession: vi.fn().mockRejectedValue(unauthorised),
+      signIn: vi.fn(),
+      signOut: vi.fn(),
+    };
+
+    renderApp(client, '/p/finance/public-report-id');
+
+    expect(await screen.findByRole('heading', { name: 'Public financial report' })).toBeVisible();
+    expect(screen.getByText('This publication is not available yet.')).toBeVisible();
+    expect(client.getSession).not.toHaveBeenCalled();
+    expect(screen.queryByText('RT 05 Taman Warga')).not.toBeInTheDocument();
+  });
+
   it('restores a requested protected route after sign-in', async () => {
     const user = userEvent.setup();
     const client: IdentityClient = {

@@ -32,6 +32,9 @@
       "path": "../../libs/shared/ui/tsconfig.lib.json"
     },
     {
+      "path": "../../libs/platform/contracts/tsconfig.lib.json"
+    },
+    {
       "path": "../../libs/shared/http-client/tsconfig.lib.json"
     },
     {

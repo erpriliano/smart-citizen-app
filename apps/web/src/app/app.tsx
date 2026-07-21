@@ -8,6 +8,7 @@ import {
   useSignOutMutation,
   type IdentityClient,
 } from '@smart-citizen/identity-web';
+import { administrativeRoutePaths } from '@smart-citizen/platform-contracts';
 import { Button, Skeleton } from '@smart-citizen/shared-ui';
 
 import { apiClient } from './http-client';
@@ -23,6 +24,42 @@ const WeeklyOverviewPage = lazy(async () => {
 });
 
 const productionIdentityClient = createIdentityClient(apiClient);
+
+const plannedAdministrativeRoutes = [
+  { path: administrativeRoutePaths.houses, title: 'Houses' },
+  { path: administrativeRoutePaths.residents, title: 'Residents' },
+  { path: administrativeRoutePaths.residencyChanges, title: 'Residency changes' },
+  { path: administrativeRoutePaths.financialReports, title: 'Financial reports' },
+  {
+    path: administrativeRoutePaths.financialReportWorkspace,
+    title: 'Financial report workspace',
+  },
+  { path: administrativeRoutePaths.publications, title: 'Publications' },
+  { path: administrativeRoutePaths.team, title: 'Team and access' },
+  { path: administrativeRoutePaths.audit, title: 'Audit trail' },
+  { path: administrativeRoutePaths.settings, title: 'Community settings' },
+] as const;
+
+interface UnavailablePageProps {
+  message: string;
+  standalone?: boolean;
+  title: string;
+}
+
+function UnavailablePage({ message, standalone = false, title }: UnavailablePageProps) {
+  const content = (
+    <section className="max-w-xl py-8">
+      <h1 className="text-2xl font-semibold text-foreground">{title}</h1>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">{message}</p>
+    </section>
+  );
+
+  if (standalone) {
+    return <main className="min-h-screen bg-background px-6 py-12">{content}</main>;
+  }
+
+  return content;
+}
 
 function RouteLoadingState() {
   return (
@@ -71,9 +108,31 @@ export function App({ identityClient = productionIdentityClient }: AppProps) {
       <Suspense fallback={<RouteLoadingState />}>
         <Routes>
           <Route path="/sign-in" element={<SignInPage />} />
+          <Route
+            path="/p/finance/:publicId"
+            element={
+              <UnavailablePage
+                message="This publication is not available yet."
+                standalone
+                title="Public financial report"
+              />
+            }
+          />
           <Route element={<ProtectedRoute />}>
             <Route element={<AuthenticatedWorkspace />}>
               <Route index element={<WeeklyOverviewPage />} />
+              {plannedAdministrativeRoutes.map((route) => (
+                <Route
+                  element={
+                    <UnavailablePage
+                      message="This page is not available yet."
+                      title={route.title}
+                    />
+                  }
+                  key={route.path}
+                  path={route.path}
+                />
+              ))}
               <Route path="*" element={<NotFoundPage />} />
             </Route>
           </Route>

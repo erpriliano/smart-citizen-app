@@ -1,4 +1,5 @@
 import type { SessionContext } from '@smart-citizen/identity-contracts';
+import { administrativeRoutePaths } from '@smart-citizen/platform-contracts';
 
 import { allNavigationKeys, getPermittedNavigation, type NavigationKey } from './navigation';
 
@@ -21,6 +22,38 @@ const baseSession: SessionContext = {
 };
 
 describe('getPermittedNavigation', () => {
+  it('uses the approved canonical administrative paths', () => {
+    expect(administrativeRoutePaths).toEqual({
+      overview: '/',
+      houses: '/houses',
+      residents: '/residents',
+      residencyChanges: '/residency-changes',
+      financialReports: '/finance/reports',
+      financialReportWorkspace: '/finance/reports/:reportId',
+      publications: '/publications',
+      team: '/team',
+      audit: '/audit',
+      settings: '/settings',
+    });
+  });
+
+  it('keeps planned navigation hidden until its delivery slice is enabled', () => {
+    const session: SessionContext = {
+      ...baseSession,
+      permissions: [
+        'residency.record.read',
+        'residency.change.read',
+        'finance.report.read',
+        'publication.manage',
+        'community.access.manage',
+        'audit.event.read',
+        'community.settings.manage',
+      ],
+    };
+
+    expect(getPermittedNavigation(session).map((item) => item.key)).toEqual(['overview']);
+  });
+
   it('returns only enabled routes allowed by explicit permission codes', () => {
     const enabled = new Set<NavigationKey>([
       'overview',

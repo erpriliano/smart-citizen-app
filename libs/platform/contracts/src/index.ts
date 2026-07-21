@@ -1,2 +1,1 @@
-/** Framework-neutral public contracts for the platform domain. */
-export {};
+export * from './lib/route-paths';

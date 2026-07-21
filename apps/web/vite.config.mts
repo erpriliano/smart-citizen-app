@@ -3,12 +3,20 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
+export const developmentApiProxy = {
+  '/api': {
+    target: 'http://localhost:3000',
+    changeOrigin: true,
+  },
+};
+
 export default defineConfig(() => ({
   root: import.meta.dirname,
   cacheDir: '../../node_modules/.vite/apps/web',
   server: {
     port: 4200,
     host: 'localhost',
+    proxy: developmentApiProxy,
   },
   preview: {
     port: 4200,

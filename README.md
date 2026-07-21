@@ -15,11 +15,13 @@ This repository contains the development and database foundations. Pilot busines
 ```bash
 pnpm install
 cp .env.example .env
-pnpm exec nx serve web
-pnpm exec nx serve api
+pnpm start:api
+pnpm start:web
 ```
 
-The web application runs at `http://localhost:4200`. The API runs at `http://localhost:3000/api/v1`, with OpenAPI documentation at `http://localhost:3000/api/docs` outside production.
+Run the two start commands in separate terminals. The web application runs at `http://localhost:4200`. The API runs at `http://localhost:3000/api/v1`, with OpenAPI documentation at `http://localhost:3000/api/docs` outside production.
+
+An existing local `.env` must include `AUTH_SESSION_SECRET`, `AUTH_SESSION_TTL_SECONDS`, and `AUTH_COOKIE_SECURE` from `.env.example`. Generate a local session secret with `openssl rand -hex 32`; never commit or share its value.
 
 ## Local Database
 
@@ -57,7 +59,7 @@ pnpm db:test
 
 ## Frontend HTTP Client
 
-Axios is the standard frontend transport through `@smart-citizen/shared-http-client`. The web composition root exposes the application instance from `apps/web/src/app/http-client.ts` and reads its base URL from `VITE_API_URL`, with `/api/v1` as the same-origin fallback.
+Axios is the standard frontend transport through `@smart-citizen/shared-http-client`. The web composition root exposes the application instance from `apps/web/src/app/http-client.ts` and reads its base URL from `VITE_API_URL`, with `/api/v1` as the same-origin fallback. During local development, Vite proxies that fallback path to `http://localhost:3000`, so older local `.env` files without `VITE_API_URL` still reach the NestJS API.
 
 Domain API functions belong in `libs/<domain>/web`. They use the shared client, validate response data at the domain boundary, and pass TanStack Query's `AbortSignal` to Axios. TanStack Query owns request retries, caching, and invalidation; Axios does not retry requests. Tenant-owned functions must receive `communityId` explicitly instead of relying on a global tenant interceptor.
 

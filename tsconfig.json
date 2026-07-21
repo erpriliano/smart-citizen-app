@@ -28,6 +28,9 @@
     },
     {
       "path": "./libs/platform/web"
+    },
+    {
+      "path": "./libs/platform/contracts"
     }
   ]
 }
