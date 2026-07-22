@@ -1,2 +1,1 @@
-/** Framework-neutral public contracts for the residency domain. */
-export {};
+export * from './lib/residency-overview';

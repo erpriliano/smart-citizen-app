@@ -31,6 +31,12 @@
     },
     {
       "path": "./libs/platform/contracts"
+    },
+    {
+      "path": "./libs/residency/contracts"
+    },
+    {
+      "path": "./libs/finance/contracts"
     }
   ]
 }
