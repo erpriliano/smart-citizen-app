@@ -43,6 +43,12 @@
     },
     {
       "path": "./libs/finance/api"
+    },
+    {
+      "path": "./libs/residency/web"
+    },
+    {
+      "path": "./libs/finance/web"
     }
   ]
 }
