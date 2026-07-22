@@ -37,8 +37,9 @@ export function ApplicationShell({
 
     try {
       await onSignOut();
-    } finally {
       navigate('/sign-in', { replace: true });
+    } catch {
+      navigate('/sign-in', { replace: true, state: { signOutFailed: true } });
     }
   };
 
@@ -125,9 +126,13 @@ export function ApplicationShell({
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
-                    <DropdownMenuItem disabled={isSigningOut} onClick={() => void handleSignOut()}>
+                    <DropdownMenuItem
+                      closeOnClick={false}
+                      disabled={isSigningOut}
+                      onClick={() => void handleSignOut()}
+                    >
                       <LogOutIcon aria-hidden="true" />
-                      {isSigningOut ? 'Signing out…' : 'Sign out'}
+                      {isSigningOut ? 'Signing out...' : 'Sign out'}
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                 </DropdownMenuContent>
