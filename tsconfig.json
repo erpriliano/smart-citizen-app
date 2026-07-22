@@ -37,6 +37,9 @@
     },
     {
       "path": "./libs/finance/contracts"
+    },
+    {
+      "path": "./libs/residency/api"
     }
   ]
 }
