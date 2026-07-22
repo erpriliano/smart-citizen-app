@@ -28,7 +28,7 @@ This design completes the Weekly Overview as a read-only weekly review surface b
 
 ## Architectural Direction
 
-Residency and Finance each own their summary contract, persistence query, application service, controller, frontend client, and TanStack Query definition. The web application composes both domain queries in parallel and passes their state to a presentational Weekly Overview in `platform/web`.
+Residency and Finance each own their summary contract, persistence query, application service, frontend client, and TanStack Query definition. Guarded HTTP controllers live in `apps/api`, where the application composition root can combine Identity guards with the domain application services without creating cross-domain implementation dependencies. The web application composes both domain queries in parallel and passes their state to a presentational Weekly Overview in `platform/web`.
 
 This avoids a Platform repository querying tables owned by other domains and avoids a cross-domain aggregator endpoint. `apps/web` and `apps/api` remain composition roots. The overview presentation does not call Axios or query Prisma.
 

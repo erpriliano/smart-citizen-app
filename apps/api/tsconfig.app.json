@@ -32,7 +32,13 @@
   ],
   "references": [
     {
+      "path": "../../libs/identity/contracts/tsconfig.lib.json"
+    },
+    {
       "path": "../../libs/shared/configuration/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/residency/api/tsconfig.lib.json"
     },
     {
       "path": "../../libs/identity/api/tsconfig.lib.json"

@@ -24,6 +24,9 @@
   ],
   "references": [
     {
+      "path": "../../identity/contracts/tsconfig.lib.json"
+    },
+    {
       "path": "../contracts/tsconfig.lib.json"
     },
     {

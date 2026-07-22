@@ -333,9 +333,9 @@ git commit -m "feat(residency): add change submission overview data"
 
 - Create: `libs/residency/api/src/lib/residency-overview.service.ts`
 - Create: `libs/residency/api/src/lib/residency-overview.service.spec.ts`
-- Create: `libs/residency/api/src/lib/residency-overview.controller.ts`
 - Create: `libs/residency/api/src/lib/residency-overview.dto.ts`
-- Create: `libs/residency/api/src/lib/residency-overview.integration.spec.ts`
+- Create: `apps/api/src/app/residency/residency-overview.controller.ts`
+- Create: `apps/api/src/app/residency/residency-overview.integration.spec.ts`
 - Modify: `libs/residency/api/src/lib/residency-api.module.ts`
 - Modify: `libs/residency/api/src/index.ts`
 - Modify: `apps/api/src/app/app.module.ts`
@@ -374,7 +374,7 @@ Expected: FAIL because the service/controller do not exist.
 
 - [ ] **Step 3: Implement service, DTO, controller, and module wiring**
 
-The service derives the community-local civil date with `Intl.DateTimeFormat(..., { timeZone })`, queries only permitted facets, and throws the generic forbidden response when neither permission exists. The controller uses:
+The service derives the community-local civil date with `Intl.DateTimeFormat(..., { timeZone })`, queries only permitted facets, and throws the generic forbidden response when neither permission exists. The application-level controller uses:
 
 ```ts
 @UseGuards(AdministrativeSessionGuard, CommunityScopeGuard)
@@ -408,9 +408,9 @@ git commit -m "feat(residency): expose tenant overview summary"
 - Create: `libs/finance/api/src/lib/prisma-finance-overview.repository.integration.spec.ts`
 - Create: `libs/finance/api/src/lib/finance-overview.service.ts`
 - Create: `libs/finance/api/src/lib/finance-overview.service.spec.ts`
-- Create: `libs/finance/api/src/lib/finance-overview.controller.ts`
 - Create: `libs/finance/api/src/lib/finance-overview.dto.ts`
-- Create: `libs/finance/api/src/lib/finance-overview.integration.spec.ts`
+- Create: `apps/api/src/app/finance/finance-overview.controller.ts`
+- Create: `apps/api/src/app/finance/finance-overview.integration.spec.ts`
 - Modify: `libs/finance/api/src/lib/finance-api.module.ts`
 - Modify: `libs/finance/api/src/index.ts`
 - Create: `libs/finance/api/tsconfig.spec.json`
@@ -469,7 +469,7 @@ Convert every amount to a decimal string before returning it. Count active `UNDE
 
 - [ ] **Step 4: Implement service, DTO, controller, and module wiring**
 
-Use `AdministrativeSessionGuard`, `CommunityScopeGuard`, `RequireAllPermissions('finance.report.read')`, and `PermissionGuard`. The service checks `finance.report.approve` only to decide whether to call `countApprovalRequired`; otherwise it returns `null`. Document stable OpenAPI responses and wire `FinanceApiModule` into `AppModule`.
+Use `AdministrativeSessionGuard`, `CommunityScopeGuard`, `RequireAllPermissions('finance.report.read')`, and `PermissionGuard` in the application-level controller. The service checks `finance.report.approve` only to decide whether to call `countApprovalRequired`; otherwise it returns `null`. Document stable OpenAPI responses and wire `FinanceApiModule` into `AppModule`.
 
 - [ ] **Step 5: Confirm GREEN and commit**
 
