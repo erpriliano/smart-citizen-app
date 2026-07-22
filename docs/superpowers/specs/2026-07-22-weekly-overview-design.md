@@ -153,7 +153,7 @@ This branch does not introduce a session table. A copied JWT remains valid until
 
 ## Testing Strategy
 
-- Contract tests validate successful payloads and reject malformed IDs, dates, stages, permissions, and minor-unit amounts.
+- Contract tests validate successful payloads and reject malformed IDs, dates, stages, counts, and minor-unit amounts.
 - Prisma repository integration tests use PostgreSQL to prove lifecycle filtering, exact finance arithmetic, date-sensitive occupancy, permission-shaped results, and explicit cross-community isolation.
 - NestJS/Supertest integration tests cover authenticated success, unauthenticated `401`, cross-community `403`, missing-permission `403`, and permission-specific response shaping.
 - Web client tests cover paths, explicit community IDs, `AbortSignal` forwarding, response validation, and safe failures.
