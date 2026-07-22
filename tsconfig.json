@@ -40,6 +40,9 @@
     },
     {
       "path": "./libs/residency/api"
+    },
+    {
+      "path": "./libs/finance/api"
     }
   ]
 }

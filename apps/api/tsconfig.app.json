@@ -35,6 +35,9 @@
       "path": "../../libs/identity/contracts/tsconfig.lib.json"
     },
     {
+      "path": "../../libs/finance/api/tsconfig.lib.json"
+    },
+    {
       "path": "../../libs/shared/configuration/tsconfig.lib.json"
     },
     {
