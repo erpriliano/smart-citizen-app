@@ -78,7 +78,10 @@ describe('App', () => {
     renderApp(client);
 
     expect(await screen.findByRole('heading', { name: 'Weekly overview' })).toBeVisible();
-    expect(screen.getAllByText('RT 05 Taman Warga')).toHaveLength(2);
+    expect(screen.getByText('RT 05 Taman Warga')).toBeVisible();
+    expect(
+      screen.getByText('Review the current administrative position for RT 05 Taman Warga.'),
+    ).toBeVisible();
     expect(screen.queryByText('No community data has been configured.')).not.toBeInTheDocument();
   });
 

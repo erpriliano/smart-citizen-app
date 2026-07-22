@@ -1,6 +1,10 @@
 import { lazy, Suspense } from 'react';
 import { Link, Route, Routes } from 'react-router-dom';
 import {
+  createFinanceOverviewClient,
+  type FinanceOverviewClient,
+} from '@smart-citizen/finance-web';
+import {
   createIdentityClient,
   IdentityProvider,
   ProtectedRoute,
@@ -9,6 +13,10 @@ import {
   type IdentityClient,
 } from '@smart-citizen/identity-web';
 import { administrativeRoutePaths } from '@smart-citizen/platform-contracts';
+import {
+  createResidencyOverviewClient,
+  type ResidencyOverviewClient,
+} from '@smart-citizen/residency-web';
 import { Button, Skeleton } from '@smart-citizen/shared-ui';
 
 import { apiClient } from './http-client';
@@ -18,12 +26,14 @@ const ApplicationShell = lazy(async () => {
   return { default: platform.ApplicationShell };
 });
 
-const WeeklyOverviewPage = lazy(async () => {
-  const platform = await import('@smart-citizen/platform-web');
-  return { default: platform.WeeklyOverviewPage };
+const WeeklyOverviewRoute = lazy(async () => {
+  const route = await import('./weekly-overview-route');
+  return { default: route.WeeklyOverviewRoute };
 });
 
 const productionIdentityClient = createIdentityClient(apiClient);
+const productionResidencyClient = createResidencyOverviewClient(apiClient);
+const productionFinanceClient = createFinanceOverviewClient(apiClient);
 
 const plannedAdministrativeRoutes = [
   { path: administrativeRoutePaths.houses, title: 'Houses' },
@@ -99,10 +109,16 @@ function NotFoundPage() {
 }
 
 export interface AppProps {
+  financeClient?: FinanceOverviewClient;
   identityClient?: IdentityClient;
+  residencyClient?: ResidencyOverviewClient;
 }
 
-export function App({ identityClient = productionIdentityClient }: AppProps) {
+export function App({
+  financeClient = productionFinanceClient,
+  identityClient = productionIdentityClient,
+  residencyClient = productionResidencyClient,
+}: AppProps) {
   return (
     <IdentityProvider client={identityClient}>
       <Suspense fallback={<RouteLoadingState />}>
@@ -120,7 +136,15 @@ export function App({ identityClient = productionIdentityClient }: AppProps) {
           />
           <Route element={<ProtectedRoute />}>
             <Route element={<AuthenticatedWorkspace />}>
-              <Route index element={<WeeklyOverviewPage />} />
+              <Route
+                index
+                element={
+                  <WeeklyOverviewRoute
+                    financeClient={financeClient}
+                    residencyClient={residencyClient}
+                  />
+                }
+              />
               {plannedAdministrativeRoutes.map((route) => (
                 <Route
                   element={
