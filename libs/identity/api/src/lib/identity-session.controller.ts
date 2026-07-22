@@ -26,9 +26,9 @@ import {
   InvalidSessionError,
 } from './identity-session.service';
 import { SessionContextDto, SignInDto } from './session.dto';
+import { IDENTITY_SESSION_COOKIE, IDENTITY_SESSION_COOKIE_PATH } from './session-cookie';
 
-export const IDENTITY_SESSION_COOKIE = 'smart_citizen_session';
-const SESSION_COOKIE_PATH = '/api/v1';
+export { IDENTITY_SESSION_COOKIE } from './session-cookie';
 
 @ApiTags('Identity')
 @Controller('identity/session')
@@ -98,7 +98,7 @@ export class IdentitySessionController {
       httpOnly: true,
       sameSite: 'lax',
       secure: this.configuration.get('AUTH_COOKIE_SECURE', { infer: true }),
-      path: SESSION_COOKIE_PATH,
+      path: IDENTITY_SESSION_COOKIE_PATH,
     };
   }
 }

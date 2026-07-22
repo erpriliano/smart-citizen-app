@@ -4,10 +4,13 @@ import { JwtModule } from '@nestjs/jwt';
 import type { Environment } from '@smart-citizen/shared-configuration';
 import { DatabaseModule } from '@smart-citizen/shared-database';
 
+import { AdministrativeSessionGuard } from './administrative-session.guard';
+import { CommunityScopeGuard } from './community-scope.guard';
 import { IdentityAccountRepository } from './identity-account.repository';
 import { IdentitySessionController } from './identity-session.controller';
 import { IdentitySessionService } from './identity-session.service';
 import { Argon2PasswordHasher, PasswordHasher } from './password-hasher';
+import { PermissionGuard } from './permission.guard';
 import { PrismaIdentityAccountRepository } from './prisma-identity-account.repository';
 import { JwtSessionTokenService, SessionTokenService } from './session-token.service';
 
@@ -27,10 +30,18 @@ import { JwtSessionTokenService, SessionTokenService } from './session-token.ser
   controllers: [IdentitySessionController],
   providers: [
     IdentitySessionService,
+    AdministrativeSessionGuard,
+    CommunityScopeGuard,
+    PermissionGuard,
     { provide: IdentityAccountRepository, useClass: PrismaIdentityAccountRepository },
     { provide: PasswordHasher, useClass: Argon2PasswordHasher },
     { provide: SessionTokenService, useClass: JwtSessionTokenService },
   ],
-  exports: [IdentitySessionService],
+  exports: [
+    IdentitySessionService,
+    AdministrativeSessionGuard,
+    CommunityScopeGuard,
+    PermissionGuard,
+  ],
 })
 export class IdentityApiModule {}
