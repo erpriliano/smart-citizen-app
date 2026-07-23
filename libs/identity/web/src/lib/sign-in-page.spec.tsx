@@ -27,7 +27,10 @@ const session = {
   permissions: ['community.read'],
 };
 
-function renderSignIn(signIn = vi.fn().mockResolvedValue(session)) {
+function renderSignIn(
+  signIn = vi.fn().mockResolvedValue(session),
+  locationState: Record<string, unknown> = { from: '/requested-workspace' },
+) {
   const client: IdentityClient = {
     getSession: vi.fn().mockResolvedValue(session),
     signIn,
@@ -45,7 +48,7 @@ function renderSignIn(signIn = vi.fn().mockResolvedValue(session)) {
       <IdentityProvider client={client}>
         <MemoryRouter
           future={{ v7_relativeSplatPath: true, v7_startTransition: true }}
-          initialEntries={[{ pathname: '/sign-in', state: { from: '/requested-workspace' } }]}
+          initialEntries={[{ pathname: '/sign-in', state: locationState }]}
         >
           <Routes>
             <Route path="/sign-in" element={<SignInPage />} />
@@ -104,5 +107,22 @@ describe('SignInPage', () => {
     expect(await screen.findByText('Sign in is unavailable. Try again.')).toBeVisible();
     expect(screen.getByLabelText('Email address')).toHaveValue('admin@example.test');
     expect(screen.queryByText('provider detail')).not.toBeInTheDocument();
+  });
+
+  it('shows only the fixed warning for a confirmed sign-out failure state', () => {
+    renderSignIn(undefined, {
+      signOutFailed: true,
+      providerDetail: 'network axios token cookie failure',
+    });
+
+    expect(screen.getByText('Sign out could not be confirmed.')).toBeVisible();
+    expect(screen.getByText('Close this browser on a shared device and try again.')).toBeVisible();
+    expect(screen.queryByText(/network|axios|token|cookie/i)).not.toBeInTheDocument();
+  });
+
+  it('ignores malformed sign-out failure state', () => {
+    renderSignIn(undefined, { signOutFailed: 'yes' });
+
+    expect(screen.queryByText('Sign out could not be confirmed.')).not.toBeInTheDocument();
   });
 });

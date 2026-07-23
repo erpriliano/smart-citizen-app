@@ -15,6 +15,23 @@ enum ResidencyType {
   @@map("residency_type")
 }
 
+enum ResidencyChangeType {
+  MOVE_IN
+  MOVE_OUT
+  CORRECTION
+
+  @@map("residency_change_type")
+}
+
+enum ResidencyChangeStage {
+  SUBMITTED
+  APPROVED
+  REJECTED
+  APPLIED
+
+  @@map("residency_change_stage")
+}
+
 enum FinancialEntryType {
   INCOME
   EXPENSE
@@ -75,6 +92,7 @@ model Community {
   houses                        House[]
   residents                     Resident[]
   residencies                   Residency[]
+  residencyChangeSubmissions    ResidencyChangeSubmission[]
   financialCategories           FinancialCategory[]
   financialReports              FinancialReport[]
   financialReportEntries        FinancialReportEntry[]
@@ -154,6 +172,11 @@ model CommunityMembership {
   residentsUpdated            Resident[]                           @relation("ResidentUpdatedBy")
   residenciesCreated          Residency[]                          @relation("ResidencyCreatedBy")
   residenciesUpdated          Residency[]                          @relation("ResidencyUpdatedBy")
+  residencyChangesSubmitted   ResidencyChangeSubmission[]          @relation("ResidencyChangeSubmittedBy")
+  residencyChangesReviewed    ResidencyChangeSubmission[]          @relation("ResidencyChangeReviewedBy")
+  residencyChangesApplied     ResidencyChangeSubmission[]          @relation("ResidencyChangeAppliedBy")
+  residencyChangesCreated     ResidencyChangeSubmission[]          @relation("ResidencyChangeCreatedBy")
+  residencyChangesUpdated     ResidencyChangeSubmission[]          @relation("ResidencyChangeUpdatedBy")
   financialCategoriesCreated  FinancialCategory[]                  @relation("FinancialCategoryCreatedBy")
   financialCategoriesUpdated  FinancialCategory[]                  @relation("FinancialCategoryUpdatedBy")
   financialReportsCreated     FinancialReport[]                    @relation("FinancialReportCreatedBy")
@@ -354,10 +377,11 @@ model House {
   createdDateTime       DateTime @default(now()) @map("created_date_time") @db.Timestamptz(3)
   updatedDateTime       DateTime @default(now()) @updatedAt @map("updated_date_time") @db.Timestamptz(3)
 
-  community           Community            @relation(fields: [communityId], references: [id], onDelete: Restrict)
-  createdByMembership CommunityMembership? @relation("HouseCreatedBy", fields: [communityId, createdByMembershipId], references: [communityId, id], onDelete: Restrict)
-  updatedByMembership CommunityMembership? @relation("HouseUpdatedBy", fields: [communityId, updatedByMembershipId], references: [communityId, id], onDelete: Restrict)
+  community           Community                   @relation(fields: [communityId], references: [id], onDelete: Restrict)
+  createdByMembership CommunityMembership?        @relation("HouseCreatedBy", fields: [communityId, createdByMembershipId], references: [communityId, id], onDelete: Restrict)
+  updatedByMembership CommunityMembership?        @relation("HouseUpdatedBy", fields: [communityId, updatedByMembershipId], references: [communityId, id], onDelete: Restrict)
   residencies         Residency[]
+  changeSubmissions   ResidencyChangeSubmission[]
 
   @@unique([communityId, id])
   @@unique([communityId, code])
@@ -376,10 +400,11 @@ model Resident {
   createdDateTime       DateTime @default(now()) @map("created_date_time") @db.Timestamptz(3)
   updatedDateTime       DateTime @default(now()) @updatedAt @map("updated_date_time") @db.Timestamptz(3)
 
-  community           Community            @relation(fields: [communityId], references: [id], onDelete: Restrict)
-  createdByMembership CommunityMembership? @relation("ResidentCreatedBy", fields: [communityId, createdByMembershipId], references: [communityId, id], onDelete: Restrict)
-  updatedByMembership CommunityMembership? @relation("ResidentUpdatedBy", fields: [communityId, updatedByMembershipId], references: [communityId, id], onDelete: Restrict)
+  community           Community                   @relation(fields: [communityId], references: [id], onDelete: Restrict)
+  createdByMembership CommunityMembership?        @relation("ResidentCreatedBy", fields: [communityId, createdByMembershipId], references: [communityId, id], onDelete: Restrict)
+  updatedByMembership CommunityMembership?        @relation("ResidentUpdatedBy", fields: [communityId, updatedByMembershipId], references: [communityId, id], onDelete: Restrict)
   residencies         Residency[]
+  changeSubmissions   ResidencyChangeSubmission[]
 
   @@unique([communityId, id])
   @@index([communityId, status])
@@ -400,16 +425,60 @@ model Residency {
   createdDateTime       DateTime      @default(now()) @map("created_date_time") @db.Timestamptz(3)
   updatedDateTime       DateTime      @default(now()) @updatedAt @map("updated_date_time") @db.Timestamptz(3)
 
-  community           Community            @relation(fields: [communityId], references: [id], onDelete: Restrict)
-  resident            Resident             @relation(fields: [communityId, residentId], references: [communityId, id], onDelete: Restrict)
-  house               House                @relation(fields: [communityId, houseId], references: [communityId, id], onDelete: Restrict)
-  createdByMembership CommunityMembership? @relation("ResidencyCreatedBy", fields: [communityId, createdByMembershipId], references: [communityId, id], onDelete: Restrict)
-  updatedByMembership CommunityMembership? @relation("ResidencyUpdatedBy", fields: [communityId, updatedByMembershipId], references: [communityId, id], onDelete: Restrict)
+  community           Community                   @relation(fields: [communityId], references: [id], onDelete: Restrict)
+  resident            Resident                    @relation(fields: [communityId, residentId], references: [communityId, id], onDelete: Restrict)
+  house               House                       @relation(fields: [communityId, houseId], references: [communityId, id], onDelete: Restrict)
+  createdByMembership CommunityMembership?        @relation("ResidencyCreatedBy", fields: [communityId, createdByMembershipId], references: [communityId, id], onDelete: Restrict)
+  updatedByMembership CommunityMembership?        @relation("ResidencyUpdatedBy", fields: [communityId, updatedByMembershipId], references: [communityId, id], onDelete: Restrict)
+  changeSubmissions   ResidencyChangeSubmission[]
 
   @@unique([communityId, id])
   @@index([communityId, residentId, status])
   @@index([communityId, houseId, status])
   @@map("residencies")
+}
+
+model ResidencyChangeSubmission {
+  id                      String               @id @default(uuid()) @db.Uuid
+  communityId             String               @map("community_id") @db.Uuid
+  changeType              ResidencyChangeType  @map("change_type")
+  workflowStage           ResidencyChangeStage @default(SUBMITTED) @map("workflow_stage")
+  residentId              String?              @map("resident_id") @db.Uuid
+  residencyId             String?              @map("residency_id") @db.Uuid
+  houseId                 String?              @map("house_id") @db.Uuid
+  proposedFullName        String?              @map("proposed_full_name")
+  proposedContactPhone    String?              @map("proposed_contact_phone")
+  proposedResidencyType   ResidencyType?       @map("proposed_residency_type")
+  proposedStartDate       DateTime?            @map("proposed_start_date") @db.Date
+  proposedEndDate         DateTime?            @map("proposed_end_date") @db.Date
+  reason                  String?
+  privateReviewNote       String?              @map("private_review_note")
+  submittedByMembershipId String               @map("submitted_by_membership_id") @db.Uuid
+  reviewedByMembershipId  String?              @map("reviewed_by_membership_id") @db.Uuid
+  appliedByMembershipId   String?              @map("applied_by_membership_id") @db.Uuid
+  reviewedDateTime        DateTime?            @map("reviewed_date_time") @db.Timestamptz(3)
+  appliedDateTime         DateTime?            @map("applied_date_time") @db.Timestamptz(3)
+  status                  Int                  @default(1) @db.SmallInt
+  createdByMembershipId   String               @map("created_by_membership_id") @db.Uuid
+  updatedByMembershipId   String               @map("updated_by_membership_id") @db.Uuid
+  createdDateTime         DateTime             @default(now()) @map("created_date_time") @db.Timestamptz(3)
+  updatedDateTime         DateTime             @default(now()) @updatedAt @map("updated_date_time") @db.Timestamptz(3)
+
+  community             Community            @relation(fields: [communityId], references: [id], onDelete: Restrict)
+  resident              Resident?            @relation(fields: [communityId, residentId], references: [communityId, id], onDelete: Restrict)
+  residency             Residency?           @relation(fields: [communityId, residencyId], references: [communityId, id], onDelete: Restrict)
+  house                 House?               @relation(fields: [communityId, houseId], references: [communityId, id], onDelete: Restrict)
+  submittedByMembership CommunityMembership  @relation("ResidencyChangeSubmittedBy", fields: [communityId, submittedByMembershipId], references: [communityId, id], onDelete: Restrict)
+  reviewedByMembership  CommunityMembership? @relation("ResidencyChangeReviewedBy", fields: [communityId, reviewedByMembershipId], references: [communityId, id], onDelete: Restrict)
+  appliedByMembership   CommunityMembership? @relation("ResidencyChangeAppliedBy", fields: [communityId, appliedByMembershipId], references: [communityId, id], onDelete: Restrict)
+  createdByMembership   CommunityMembership  @relation("ResidencyChangeCreatedBy", fields: [communityId, createdByMembershipId], references: [communityId, id], onDelete: Restrict)
+  updatedByMembership   CommunityMembership  @relation("ResidencyChangeUpdatedBy", fields: [communityId, updatedByMembershipId], references: [communityId, id], onDelete: Restrict)
+
+  @@unique([communityId, id])
+  @@index([communityId, workflowStage, status, updatedDateTime(sort: Desc)])
+  @@index([communityId, residentId, status])
+  @@index([communityId, houseId, status])
+  @@map("residency_change_submissions")
 }
 
 model FinancialCategory {

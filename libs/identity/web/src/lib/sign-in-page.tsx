@@ -18,20 +18,21 @@ import {
 
 import { useSignInMutation } from './session-query';
 
-interface SignInLocationState {
-  from?: unknown;
-}
+function safeDestination(state: unknown): string {
+  if (typeof state !== 'object' || state === null) return '/';
+  const from = Reflect.get(state, 'from');
 
-function safeDestination(state: SignInLocationState | null): string {
-  if (
-    typeof state?.from === 'string' &&
-    state.from.startsWith('/') &&
-    !state.from.startsWith('//')
-  ) {
-    return state.from;
+  if (typeof from === 'string' && from.startsWith('/') && !from.startsWith('//')) {
+    return from;
   }
 
   return '/';
+}
+
+function hasSignOutFailure(state: unknown): boolean {
+  return (
+    typeof state === 'object' && state !== null && Reflect.get(state, 'signOutFailed') === true
+  );
 }
 
 function signInErrorMessage(error: Error | null): string | null {
@@ -51,11 +52,12 @@ export function SignInPage() {
     defaultValues: { email: '', password: '' },
   });
   const errorMessage = signInErrorMessage(signIn.error);
+  const signOutFailed = hasSignOutFailure(location.state);
 
   const submit = form.handleSubmit(async (input) => {
     try {
       await signIn.mutateAsync(input);
-      navigate(safeDestination(location.state as SignInLocationState | null), {
+      navigate(safeDestination(location.state), {
         replace: true,
       });
     } catch {
@@ -83,6 +85,15 @@ export function SignInPage() {
         </div>
 
         <form className="mt-8 flex flex-col gap-5" noValidate onSubmit={submit}>
+          {signOutFailed ? (
+            <Alert>
+              <AlertTitle>Sign out could not be confirmed.</AlertTitle>
+              <AlertDescription>
+                Close this browser on a shared device and try again.
+              </AlertDescription>
+            </Alert>
+          ) : null}
+
           {errorMessage ? (
             <Alert variant="destructive">
               <AlertTitle>Sign in failed</AlertTitle>

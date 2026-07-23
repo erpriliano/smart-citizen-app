@@ -26,13 +26,25 @@
   "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"],
   "references": [
     {
+      "path": "../../libs/residency/contracts/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/finance/contracts/tsconfig.lib.json"
+    },
+    {
       "path": "../../libs/platform/web/tsconfig.lib.json"
     },
     {
       "path": "../../libs/shared/ui/tsconfig.lib.json"
     },
     {
+      "path": "../../libs/residency/web/tsconfig.lib.json"
+    },
+    {
       "path": "../../libs/platform/contracts/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/finance/web/tsconfig.lib.json"
     },
     {
       "path": "../../libs/shared/http-client/tsconfig.lib.json"

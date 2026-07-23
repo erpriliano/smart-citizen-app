@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
+import { MemoryRouter, Outlet, Route, Routes, useLocation } from 'react-router-dom';
 import type { SessionContext } from '@smart-citizen/identity-contracts';
 import { vi } from 'vitest';
 
@@ -30,16 +30,29 @@ function SessionBoundary() {
   return <Outlet context={session} />;
 }
 
-function renderShell(enabledNavigation = new Set<NavigationKey>(['overview', 'houses'])) {
-  const signOut = vi.fn().mockResolvedValue(undefined);
+function SignedOutPage() {
+  const location = useLocation();
+  const state = location.state as { signOutFailed?: unknown } | null;
 
+  return (
+    <>
+      <h1>Signed out</h1>
+      <p>Sign-out failure: {state?.signOutFailed === true ? 'true' : 'false'}</p>
+    </>
+  );
+}
+
+function renderShell(
+  enabledNavigation = new Set<NavigationKey>(['overview', 'houses']),
+  signOut = vi.fn().mockResolvedValue(undefined),
+) {
   render(
     <MemoryRouter
       future={{ v7_relativeSplatPath: true, v7_startTransition: true }}
       initialEntries={['/']}
     >
       <Routes>
-        <Route path="/sign-in" element={<h1>Signed out</h1>} />
+        <Route path="/sign-in" element={<SignedOutPage />} />
         <Route element={<SessionBoundary />}>
           <Route
             element={<ApplicationShell enabledNavigation={enabledNavigation} onSignOut={signOut} />}
@@ -93,6 +106,41 @@ describe('ApplicationShell', () => {
     expect(await screen.findByRole('heading', { name: 'Signed out' })).toBeVisible();
     expect(signOut).toHaveBeenCalledOnce();
     expect(screen.queryByText('RT 05 Taman Warga')).not.toBeInTheDocument();
+  });
+
+  it('keeps the sign-out action visible and disabled while pending', async () => {
+    const user = userEvent.setup();
+    let resolveSignOut!: () => void;
+    const signOut = vi.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveSignOut = resolve;
+        }),
+    );
+    renderShell(undefined, signOut);
+
+    await user.click(screen.getByRole('button', { name: 'Account menu' }));
+    await user.click(await screen.findByRole('menuitem', { name: 'Sign out' }));
+
+    expect(await screen.findByRole('menuitem', { name: 'Signing out…' })).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
+    resolveSignOut();
+    expect(await screen.findByRole('heading', { name: 'Signed out' })).toBeVisible();
+  });
+
+  it('navigates with only a boolean failure state when sign out rejects', async () => {
+    const user = userEvent.setup();
+    const signOut = vi.fn().mockRejectedValue(new Error('network token cookie detail'));
+    renderShell(undefined, signOut);
+
+    await user.click(screen.getByRole('button', { name: 'Account menu' }));
+    await user.click(await screen.findByRole('menuitem', { name: 'Sign out' }));
+
+    expect(await screen.findByRole('heading', { name: 'Signed out' })).toBeVisible();
+    expect(screen.getByText('Sign-out failure: true')).toBeVisible();
+    expect(screen.queryByText(/network|token|cookie/i)).not.toBeInTheDocument();
   });
 });
 

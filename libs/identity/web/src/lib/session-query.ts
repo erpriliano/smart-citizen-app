@@ -41,8 +41,8 @@ export function useSignOutMutation(): UseMutationResult<void, Error, void> {
   return useMutation({
     mutationFn: () => client.signOut(),
     onSettled: async () => {
-      await queryClient.cancelQueries({ queryKey: sessionQueryKey });
-      queryClient.removeQueries({ queryKey: sessionQueryKey });
+      await queryClient.cancelQueries();
+      queryClient.removeQueries();
     },
   });
 }

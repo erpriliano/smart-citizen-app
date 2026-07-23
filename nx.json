@@ -27,7 +27,11 @@
     "typecheck": {
       "cache": true,
       "dependsOn": ["^typecheck"],
-      "inputs": ["default", "^default"]
+      "inputs": ["default", "^default"],
+      "outputs": [
+        "{projectRoot}/tsconfig.tsbuildinfo",
+        "{workspaceRoot}/dist/out-tsc/{projectRoot}/**/*.{d.ts,d.cts,d.mts,tsbuildinfo}"
+      ]
     },
     "test": {
       "cache": true,

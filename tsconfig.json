@@ -31,6 +31,24 @@
     },
     {
       "path": "./libs/platform/contracts"
+    },
+    {
+      "path": "./libs/residency/contracts"
+    },
+    {
+      "path": "./libs/finance/contracts"
+    },
+    {
+      "path": "./libs/residency/api"
+    },
+    {
+      "path": "./libs/finance/api"
+    },
+    {
+      "path": "./libs/residency/web"
+    },
+    {
+      "path": "./libs/finance/web"
     }
   ]
 }

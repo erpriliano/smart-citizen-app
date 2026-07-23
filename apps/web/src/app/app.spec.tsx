@@ -52,6 +52,8 @@ function renderApp(client: IdentityClient, initialEntry = '/') {
       </MemoryRouter>
     </QueryClientProvider>,
   );
+
+  return { queryClient };
 }
 
 describe('App', () => {
@@ -78,7 +80,10 @@ describe('App', () => {
     renderApp(client);
 
     expect(await screen.findByRole('heading', { name: 'Weekly overview' })).toBeVisible();
-    expect(screen.getAllByText('RT 05 Taman Warga')).toHaveLength(2);
+    expect(screen.getByText('RT 05 Taman Warga')).toBeVisible();
+    expect(
+      screen.getByText('Review the current administrative position for RT 05 Taman Warga.'),
+    ).toBeVisible();
     expect(screen.queryByText('No community data has been configured.')).not.toBeInTheDocument();
   });
 
@@ -142,5 +147,25 @@ describe('App', () => {
 
     expect(await screen.findByRole('heading', { name: 'Page not found' })).toBeVisible();
     expect(client.signIn).toHaveBeenCalledOnce();
+  });
+
+  it('clears private data and shows only a generic warning when sign out fails', async () => {
+    const user = userEvent.setup();
+    const client: IdentityClient = {
+      getSession: vi.fn().mockResolvedValue(session),
+      signIn: vi.fn(),
+      signOut: vi.fn().mockRejectedValue(new Error('network axios token cookie detail')),
+    };
+    const { queryClient } = renderApp(client);
+
+    expect(await screen.findByRole('heading', { name: 'Weekly overview' })).toBeVisible();
+    queryClient.setQueryData(['private', 'resident-record'], { fullName: 'Private resident' });
+    await user.click(screen.getByRole('button', { name: 'Account menu' }));
+    await user.click(await screen.findByRole('menuitem', { name: 'Sign out' }));
+
+    expect(await screen.findByText('Sign out could not be confirmed.')).toBeVisible();
+    expect(screen.getByText('Close this browser on a shared device and try again.')).toBeVisible();
+    expect(queryClient.getQueryCache().getAll()).toHaveLength(0);
+    expect(screen.queryByText(/network|axios|token|cookie/i)).not.toBeInTheDocument();
   });
 });

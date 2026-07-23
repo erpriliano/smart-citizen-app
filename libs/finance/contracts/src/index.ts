@@ -1,2 +1,1 @@
-/** Framework-neutral public contracts for the finance domain. */
-export {};
+export * from './lib/finance-overview';

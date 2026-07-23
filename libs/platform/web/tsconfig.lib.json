@@ -20,6 +20,12 @@
   "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"],
   "references": [
     {
+      "path": "../../residency/contracts/tsconfig.lib.json"
+    },
+    {
+      "path": "../../finance/contracts/tsconfig.lib.json"
+    },
+    {
       "path": "../contracts/tsconfig.lib.json"
     },
     {
