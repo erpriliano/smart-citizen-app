@@ -122,7 +122,7 @@ describe('ApplicationShell', () => {
     await user.click(screen.getByRole('button', { name: 'Account menu' }));
     await user.click(await screen.findByRole('menuitem', { name: 'Sign out' }));
 
-    expect(await screen.findByRole('menuitem', { name: 'Signing out...' })).toHaveAttribute(
+    expect(await screen.findByRole('menuitem', { name: 'Signing out…' })).toHaveAttribute(
       'aria-disabled',
       'true',
     );

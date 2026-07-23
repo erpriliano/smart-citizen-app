@@ -132,7 +132,7 @@ export function ApplicationShell({
                       onClick={() => void handleSignOut()}
                     >
                       <LogOutIcon aria-hidden="true" />
-                      {isSigningOut ? 'Signing out...' : 'Sign out'}
+                      {isSigningOut ? 'Signing out…' : 'Sign out'}
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                 </DropdownMenuContent>
