@@ -6,24 +6,19 @@ import {
   type FinanceOverviewClient,
 } from '@smart-citizen/finance-web';
 import type { SessionContext } from '@smart-citizen/identity-contracts';
+import { WeeklyOverviewPage } from '@smart-citizen/platform-web';
 import type { ResidencyOverview } from '@smart-citizen/residency-contracts';
 import {
   residencyOverviewQueryKey,
   useResidencyOverviewQuery,
   type ResidencyOverviewClient,
 } from '@smart-citizen/residency-web';
-import { lazy } from 'react';
 import { useOutletContext } from 'react-router-dom';
 
 type RouteSectionState<T> =
   | { status: 'loading' }
   | { status: 'error'; retry: () => void }
   | { status: 'ready'; data: T };
-
-const WeeklyOverviewPage = lazy(async () => {
-  const platform = await import('@smart-citizen/platform-web');
-  return { default: platform.WeeklyOverviewPage };
-});
 
 function toSectionState<T>(query: UseQueryResult<T, Error>): RouteSectionState<T> {
   if (query.isPending) return { status: 'loading' };

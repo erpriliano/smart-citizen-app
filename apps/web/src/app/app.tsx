@@ -13,6 +13,7 @@ import {
   type IdentityClient,
 } from '@smart-citizen/identity-web';
 import { administrativeRoutePaths } from '@smart-citizen/platform-contracts';
+import { ApplicationShell } from '@smart-citizen/platform-web';
 import {
   createResidencyOverviewClient,
   type ResidencyOverviewClient,
@@ -20,11 +21,6 @@ import {
 import { Button, Skeleton } from '@smart-citizen/shared-ui';
 
 import { apiClient } from './http-client';
-
-const ApplicationShell = lazy(async () => {
-  const platform = await import('@smart-citizen/platform-web');
-  return { default: platform.ApplicationShell };
-});
 
 const WeeklyOverviewRoute = lazy(async () => {
   const route = await import('./weekly-overview-route');
